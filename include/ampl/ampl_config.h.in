@@ -1,0 +1,11 @@
+#ifndef AMPL_CONFIG_H
+#define AMPL_CONFIG_H
+
+#cmakedefine LIBAMPL_SHARED
+
+#define AMPL_VERSION @ampl_VERSION@
+#define AMPL_VERSION_MAJOR @ampl_VERSION_MAJOR@
+#define AMPL_VERSION_MINOR @ampl_VERSION_MINOR@
+#define AMPL_VERSION_PATCH @ampl_VERSION_PATCH@
+
+#endif

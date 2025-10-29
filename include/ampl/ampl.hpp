@@ -1,0 +1,7 @@
+#ifndef AMPL_HPP
+#define AMPL_HPP
+#include <ampl/geometry.hpp>
+#include <ampl/kinematics.hpp>
+#include <ampl/utils.hpp>
+
+#endif

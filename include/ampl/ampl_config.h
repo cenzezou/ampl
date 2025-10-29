@@ -1,0 +1,11 @@
+#ifndef AMPL_CONFIG_H
+#define AMPL_CONFIG_H
+
+#define LIBAMPL_SHARED
+
+#define AMPL_VERSION 0.0.0
+#define AMPL_VERSION_MAJOR 0
+#define AMPL_VERSION_MINOR 0
+#define AMPL_VERSION_PATCH 0
+
+#endif
