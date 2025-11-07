@@ -22,7 +22,7 @@ target_compile_options(${TARGET_NAME_EXE} PRIVATE
 $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wall -O3 -march=native  -fopenmp>
 )
 target_include_directories(${TARGET_NAME_EXE} PRIVATE ${EIGEN3_INCLUDE_DIR})
-target_link_libraries(${TARGET_NAME_EXE} PUBLIC  ampl tinycgl::tinycgl)
+target_link_libraries(${TARGET_NAME_EXE} PUBLIC  ampl )
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(${TARGET_NAME_EXE} PUBLIC OpenMP::OpenMP_CXX)

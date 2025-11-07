@@ -1,0 +1,7 @@
+
+#include "kinematics.hpp"
+#include "utils.hpp"
+NB_MODULE(_core_ext, pymodule) {
+  ampl::binding::init_utils(pymodule);
+  ampl::binding::init_kinematics(pymodule);
+}

@@ -10,8 +10,9 @@ int main() {
   Eigen::Vector3f p;
 
   ampl::intersectf_line3(os, ns, 2, p.data());
-  auto m = ampl::ArmBase::create(std::string("abb_irb6700_150_320"),
-                                 ampl::ArmType::Industrial6, 6, nullptr);
+  std::unique_ptr<ampl::ArmBase> m;
+  m = ampl::ArmBase::create(std::string("abb_irb6700_150_320"),
+                            ampl::ArmType::Industrial6, 6);
 
   std::cout << m->info() << std::endl;
 

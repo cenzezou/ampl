@@ -16,10 +16,10 @@ public:
   const uint32_t &dof() override { return dof_; };
 
   void initialize_urdf(const double *xyzrpyaxis,
-                       const double *joint_limits = nullptr) override{};
-  void set_joint_limits(double *joint_limits) override{};
-  void initialize_preset(const std::string &name) override{};
-  void fk(const double *q, double *qts_link) override{};
+                       const double *joint_limits = nullptr) override {};
+  void set_joint_limits(const double *joint_limits) override {};
+  void initialize_preset(const std::string &name) override {};
+  void fk(const double *q, double *qts_link) override {};
 };
 
 class ArmR6 : public ArmBase {
@@ -34,7 +34,7 @@ public:
 
   void initialize_urdf(const double *xyzrpyaxis,
                        const double *joint_limits = nullptr) override;
-  void set_joint_limits(double *joint_limits) override;
+  void set_joint_limits(const double *joint_limits) override;
   void initialize_preset(const std::string &name) override;
   void fk(const double *q, double *qts_link) override;
 
@@ -52,6 +52,8 @@ public:
 
   Vec3d q_wrist;
   Mat4d link_end_fk_home;
+  Vec6d q_lo;
+  Vec6d q_hi;
 };
 
 class ArmR7 : public ArmBase {
@@ -61,7 +63,7 @@ public:
   const uint32_t &dof() override { return dof_; };
   void initialize_urdf(const double *xyzrpyaxis,
                        const double *joint_limits = nullptr) override;
-  void set_joint_limits(double *joint_limits) override;
+  void set_joint_limits(const double *joint_limits) override;
   void initialize_preset(const std::string &name) override;
   void fk(const double *q, double *qts_link) override;
 

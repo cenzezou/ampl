@@ -11,9 +11,7 @@
 namespace ampl {
 
 std::unique_ptr<ArmBase> ArmBase::create(const std::string &name,
-                                         const ArmType &arm_type,
-                                         const uint32_t dof,
-                                         const float *urdf) {
+                                         ArmType arm_type, uint32_t dof) {
 
   if (arm_type == ArmType::Industrial6)
     return std::make_unique<ArmR6>(name);

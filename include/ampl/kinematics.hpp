@@ -1,5 +1,5 @@
-#ifndef AMPL_KINEMTICS_HPP
-#define AMPL_KINEMTICS_HPP
+#ifndef AMPL_KINEMATICS_HPP
+#define AMPL_KINEMATICS_HPP
 
 #include <memory>
 #include <string>
@@ -8,14 +8,16 @@ namespace ampl {
 
 enum class ArmType { Industrial6, UR6, Humanoid7 };
 
+static const char *ArmPresetIndustrial6[3] = {"abb_irb6700_150_320",
+                                              "yaskawa_gp12", "elfin_10l"};
+static const char *ArmPresetHumanoid7[1] = {"abb_irb6700_150_320"};
 class ArmBase {
 public:
   virtual ~ArmBase() = default;
   static std::unique_ptr<ArmBase> create(const std::string &name,
-                                         const ArmType &arm_type,
-                                         const uint32_t dof, const float *urdf);
-  static std::unique_ptr<ArmBase>
-  create(const std::string &name, const ArmType &arm_type, const uint32_t dof);
+                                         ArmType arm_type, uint32_t dof);
+  // static std::unique_ptr<ArmBase> create(const std::string &name,
+  //                                        ArmType arm_type, uint32_t dof);
   virtual std::string info() = 0;
   virtual const uint32_t &dof() = 0;
 
@@ -23,7 +25,7 @@ public:
                                const double *joint_limits = nullptr) = 0;
 
   virtual void initialize_preset(const std::string &name) = 0;
-  virtual void set_joint_limits(double *joint_limits) = 0;
+  virtual void set_joint_limits(const double *joint_limits) = 0;
   virtual void fk(const double *q, double *qts_link) = 0;
 };
 } // namespace ampl

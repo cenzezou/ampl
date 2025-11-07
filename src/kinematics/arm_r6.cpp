@@ -24,13 +24,26 @@ void ArmR6::initialize_urdf(const double *urdf, const double *joint_limits) {
   qts_cache_f = urdf2qts<K, double, float>(urdf);
   qts_cache = urdf2qts<K, double, double>(urdf);
   twists_cache = urdf2axisarr<K, double>(urdf);
+
+  if (joint_limits) {
+
+    memcpy(q_lo.data(), joint_limits, K * sizeof(double));
+    memcpy(q_hi.data(), joint_limits + K, K * sizeof(double));
+  }
 }
 void ArmR6::initialize_preset(const std::string &name) {
   if (name == "abb_irb6700_150_320")
     initialize_urdf(ABB_IRB6700_150_320::urdf, ABB_IRB6700_150_320::bounds);
+  else if (name == "yaskawa_gp12")
+    initialize_urdf(YASKAWA_GP12::urdf, YASKAWA_GP12::bounds);
+  else if (name == "elfin_10l")
+    initialize_urdf(ELFIN_10L::urdf, ELFIN_10L::bounds);
 };
 
-void ArmR6::set_joint_limits(double *joint_limits){};
+void ArmR6::set_joint_limits(const double *joint_limits) {
+  memcpy(q_lo.data(), joint_limits, K * sizeof(double));
+  memcpy(q_hi.data(), joint_limits + K, K * sizeof(double));
+};
 
 } // namespace ampl
 

@@ -223,8 +223,8 @@ static const Eigen::Vector3d find_wrist(const Eigen::Vector<double, 6> *pns,
         p_wrist.data());
   }
 
-  std::cout << dist_to_joint << std::endl;
-  std::cout << p_wrist << std::endl;
+  // std::cout << dist_to_joint << std::endl;
+  // std::cout << p_wrist << std::endl;
 
   return p_wrist;
 }
