@@ -12,14 +12,17 @@ class ArmNull : public ArmBase {
 public:
   ArmNull() : dof_{0} {};
   uint32_t dof_ = 0;
-  std::string info() override { return std::string("null"); };
+  std::string info() override { return std::string("not implemented"); };
   const uint32_t &dof() override { return dof_; };
 
   void initialize_urdf(const double *xyzrpyaxis,
-                       const double *joint_limits = nullptr) override {};
-  void set_joint_limits(const double *joint_limits) override {};
+                       const double *joint_limits = nullptr,
+                       const double *xyzrpy_tool0 = nullptr) override {};
+  void set_joint_limits(const double *, const double *) override {};
   void initialize_preset(const std::string &name) override {};
   void fk(const double *q, double *qts_link) override {};
+  void set_link_end_tool0(const double *xyzrpy) override {};
+  void set_tcp(const double *tf44, bool colmajor = true) override {};
 };
 
 class ArmR6 : public ArmBase {
@@ -33,10 +36,13 @@ public:
   const uint32_t &dof() override { return K; };
 
   void initialize_urdf(const double *xyzrpyaxis,
-                       const double *joint_limits = nullptr) override;
-  void set_joint_limits(const double *joint_limits) override;
+                       const double *joint_limits = nullptr,
+                       const double *xyzrpy_tool0 = nullptr) override;
+  void set_joint_limits(const double *, const double *) override;
   void initialize_preset(const std::string &name) override;
   void fk(const double *q, double *qts_link) override;
+  void set_link_end_tool0(const double *xyzrpy) override;
+  void set_tcp(const double *tf44, bool colmajor = true) override;
 
 public:
   static constexpr uint32_t K = 6;
@@ -54,6 +60,8 @@ public:
   Mat4d link_end_fk_home;
   Vec6d q_lo;
   Vec6d q_hi;
+  Mat4d tf_link_end_tool0;
+  Mat4d tf_link_end_tcp;
 };
 
 class ArmR7 : public ArmBase {
@@ -62,10 +70,13 @@ public:
   std::string info() override { return info_; };
   const uint32_t &dof() override { return dof_; };
   void initialize_urdf(const double *xyzrpyaxis,
-                       const double *joint_limits = nullptr) override;
-  void set_joint_limits(const double *joint_limits) override;
+                       const double *joint_limits = nullptr,
+                       const double *xyzrpy_tool0 = nullptr) override;
+  void set_joint_limits(const double *, const double *) override;
   void initialize_preset(const std::string &name) override;
   void fk(const double *q, double *qts_link) override;
+  void set_link_end_tool0(const double *xyzrpy) override;
+  void set_tcp(const double *tf44, bool colmajor = true) override;
 
 public:
   std::string info_;

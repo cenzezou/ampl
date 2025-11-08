@@ -21,6 +21,10 @@ struct ABB_IRB6700_150_320 {
       -5.235987755982989,  -2.2689280275926285, -6.283185307179586,
       2.9670597283903604,  1.4835298641951802,  1.2217304763960306,
       5.235987755982989,   2.2689280275926285,  6.283185307179586};
+
+  static constexpr const double tool0[6] = {
+      0, 0, 0, 0, M_PI_2, 0 //
+  };
 };
 struct YASKAWA_GP12 {
   static constexpr auto name = "yaskawa_gp12";
@@ -41,6 +45,9 @@ struct YASKAWA_GP12 {
       -2.9670, -1.5708, -1.4835, -3.4906, -2.6179, -7.9412, //
       +2.9670, +2.7052, +2.6179, +3.4906, +2.6179, +7.9412  //
   };
+  static constexpr const double tool0[6] = {
+      0.100, 0, 0, M_PI, -M_PI_2, 0 //
+  };
 };
 struct ELFIN_10L {
   static constexpr auto name = "elfin_10l";
@@ -57,6 +64,9 @@ struct ELFIN_10L {
   static constexpr const double bounds[dof * 2] = {
       -M_PI, -M_PI, -M_PI, -M_PI, -M_PI, -M_PI, //
       M_PI,  M_PI,  M_PI,  M_PI,  M_PI,  M_PI   //
+  };
+  static constexpr const double tool0[6] = {
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0 //
   };
 };
 

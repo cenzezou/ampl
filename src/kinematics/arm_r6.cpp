@@ -12,7 +12,8 @@
 
 namespace ampl {
 
-void ArmR6::initialize_urdf(const double *urdf, const double *joint_limits) {
+void ArmR6::initialize_urdf(const double *urdf, const double *joint_limits,
+                            const double *xyzrpy_tool0) {
   tfs_cache = urdf2tfs<K, double>(urdf);
   twists_home = urdf2twists<K, double>(urdf);
   link_end_fk_home = tfs2eehome<K>(tfs_cache.data());
@@ -29,7 +30,17 @@ void ArmR6::initialize_urdf(const double *urdf, const double *joint_limits) {
 
     memcpy(q_lo.data(), joint_limits, K * sizeof(double));
     memcpy(q_hi.data(), joint_limits + K, K * sizeof(double));
+  } else {
+    q_lo.setConstant(-M_PI);
+    q_hi.setConstant(M_PI);
   }
+
+  tf_link_end_tool0.setIdentity();
+  tf_link_end_tcp.setIdentity();
+  if (xyzrpy_tool0) {
+    set_link_end_tool0(xyzrpy_tool0);
+  }
+  tf_link_end_tcp = tf_link_end_tool0;
 }
 void ArmR6::initialize_preset(const std::string &name) {
   if (name == "abb_irb6700_150_320")
@@ -40,9 +51,26 @@ void ArmR6::initialize_preset(const std::string &name) {
     initialize_urdf(ELFIN_10L::urdf, ELFIN_10L::bounds);
 };
 
-void ArmR6::set_joint_limits(const double *joint_limits) {
-  memcpy(q_lo.data(), joint_limits, K * sizeof(double));
-  memcpy(q_hi.data(), joint_limits + K, K * sizeof(double));
+void ArmR6::set_joint_limits(const double *joint_limits_low,
+                             const double *joint_limits_hi) {
+  memcpy(q_lo.data(), joint_limits_low, K * sizeof(double));
+  memcpy(q_hi.data(), joint_limits_hi, K * sizeof(double));
+};
+
+void ArmR6::set_link_end_tool0(const double *xyzrpy) {
+  xyzrpy2tf<double>(xyzrpy, xyzrpy + 3, tf_link_end_tool0);
+};
+void ArmR6::set_tcp(const double *tf44, bool colmajor) {
+
+  if (colmajor) {
+
+    Eigen::Map<const Mat4d> tf_tool0_tcp(tf44);
+    tf_link_end_tcp = tf_link_end_tool0 * tf_tool0_tcp;
+  } else {
+    tf_link_end_tcp = Eigen::Map<const Mat4d>(tf44);
+    tf_link_end_tcp.transposeInPlace();
+    tf_link_end_tcp = tf_link_end_tool0 * tf_link_end_tcp;
+  }
 };
 
 } // namespace ampl

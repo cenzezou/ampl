@@ -16,6 +16,9 @@ std::unique_ptr<ArmBase> ArmBase::create(const std::string &name,
   if (arm_type == ArmType::Industrial6)
     return std::make_unique<ArmR6>(name);
 
+  if (arm_type == ArmType::UR6)
+    return std::make_unique<ArmNull>();
+
   if (arm_type == ArmType::Humanoid7)
     return std::make_unique<ArmR7>(name);
 
