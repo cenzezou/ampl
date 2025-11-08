@@ -33,6 +33,8 @@ public:
   virtual void fk(const double *q, double *qts_link) = 0;
   virtual void set_link_end_tool0(const double *xyzrpy) = 0;
   virtual void set_tcp(const double *tf44, bool colmajor = true) = 0;
+
+  virtual void get_pose_tool0(double *tf44, bool colmajor = true) = 0;
 };
 } // namespace ampl
 

@@ -17,4 +17,5 @@ void ArmR7::set_joint_limits(const double *, const double *) {};
 void ArmR7::fk(const double *q, double *qts_link) {};
 void ArmR7::set_link_end_tool0(const double *xyzrpy) {};
 void ArmR7::set_tcp(const double *tf44, bool colmajor) {};
+void ArmR7::get_pose_tool0(double *tf44, bool colmajor) {};
 } // namespace ampl

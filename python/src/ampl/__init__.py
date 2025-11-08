@@ -9,7 +9,9 @@ __all__ = [
 "write_pointcloud",
 "read_pointcloud",
 "write_polylines",
-"read_polylines"
+"read_polylines",
+
+"transform_xyz"
    
 ]
 # from . import _core
@@ -28,3 +30,6 @@ from ._utils.io import write_pointcloud as write_pointcloud
 from ._utils.io import read_pointcloud as read_pointcloud
 from ._utils.io import write_polylines as write_polylines
 from ._utils.io import read_polylines as read_polylines
+
+
+from ._core import transform_xyz as transform_xyz

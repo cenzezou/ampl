@@ -3,10 +3,17 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include <ampl/geometry.hpp>
-//#include <iostream>
+#include <iostream>
 #include <math.h>
 
 namespace ampl {
+template void transform_xyz<double>(const double *rw, const double *t,
+                                    const double *xyz, uint32_t nb_xyz,
+                                    double *xyz_dst);
+template void transform_xyz<float>(const float *rw, const float *t,
+                                   const float *xyz, uint32_t nb_xyz,
+                                   float *xyz_dst);
+
 template void convert_qt_to_tf<float>(const float *qt7, float *tf44,
                                       bool colmajor, bool q_then_t);
 template void convert_qt_to_tf<double>(const double *qt7, double *tf44,
@@ -25,6 +32,21 @@ template <typename REAL>
 void so3_up(const Eigen::Vector3<REAL> &omg,
             Eigen::Ref<Eigen::Matrix3<REAL>> so3) {
   so3 << 0, -omg(2), omg(1), omg(2), 0, -omg(0), -omg(1), omg(0), 0;
+};
+
+template <typename REAL>
+void transform_xyz(const REAL *rw, const REAL *t, const REAL *xyz,
+                   uint32_t nb_xyz, REAL *xyz_dst) {
+
+  Eigen::Quaternion<REAL> quat(rw);
+
+  // std::cout << quat << std::endl;
+  Eigen::Map<const Eigen::Matrix3X<REAL>> V(xyz, 3, nb_xyz);
+  Eigen::Map<Eigen::Matrix3X<REAL>> V_dst(xyz_dst, 3, nb_xyz);
+  for (uint32_t j = 0; j < nb_xyz; j++)
+    V_dst.col(j) = (quat * V.col(j));
+  Eigen::Map<const Eigen::Vector3<REAL>> T(t);
+  V_dst.colwise() += T;
 };
 
 template <typename REAL>

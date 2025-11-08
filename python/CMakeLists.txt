@@ -55,7 +55,7 @@ if (OPENMP_CXX_FOUND)
   target_link_libraries(_core_ext PRIVATE OpenMP::OpenMP_CXX)
 endif ()
 
-
+#message("----------",${CMAKE_BINARY_DIR}/stubs/)
 
 set(STUB_PREFIX "${CMAKE_BINARY_DIR}/stubs/")
 
@@ -80,7 +80,7 @@ install(
 
 install(
   FILES "${STUB_PREFIX}__init__.pyi"
-  DESTINATION "src/ampl/_core"
+  DESTINATION "${CMAKE_SOURCE_DIR}/src/ampl/_core"
 )
 # install(
 #    FILES "${CMAKE_SOURCE_DIR}__init__.pyi"

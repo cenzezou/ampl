@@ -44,9 +44,11 @@ void ArmR6::initialize_urdf(const double *urdf, const double *joint_limits,
 }
 void ArmR6::initialize_preset(const std::string &name) {
   if (name == "abb_irb6700_150_320")
-    initialize_urdf(ABB_IRB6700_150_320::urdf, ABB_IRB6700_150_320::bounds);
+    initialize_urdf(ABB_IRB6700_150_320::urdf, ABB_IRB6700_150_320::bounds,
+                    ABB_IRB6700_150_320::tool0);
   else if (name == "yaskawa_gp12")
-    initialize_urdf(YASKAWA_GP12::urdf, YASKAWA_GP12::bounds);
+    initialize_urdf(YASKAWA_GP12::urdf, YASKAWA_GP12::bounds,
+                    YASKAWA_GP12::tool0);
   else if (name == "elfin_10l")
     initialize_urdf(ELFIN_10L::urdf, ELFIN_10L::bounds);
 };
@@ -59,6 +61,13 @@ void ArmR6::set_joint_limits(const double *joint_limits_low,
 
 void ArmR6::set_link_end_tool0(const double *xyzrpy) {
   xyzrpy2tf<double>(xyzrpy, xyzrpy + 3, tf_link_end_tool0);
+
+  quat_end_tool0 = quatd(tf_link_end_tool0.topLeftCorner<3, 3>());
+  t_end_tool0 = tf_link_end_tool0.topRightCorner<3, 1>();
+};
+
+void ArmR6::get_pose_tool0(double *tf44, bool colmajor) {
+
 };
 void ArmR6::set_tcp(const double *tf44, bool colmajor) {
 
@@ -103,6 +112,18 @@ void ArmR6::fk(const double *q, double *qts_link) {
             Eigen::Quaterniond(Eigen::AngleAxisd(q[k], axisk_cache));
     transk = quatkm1 * transk_cache + transkm1;
   }
+
+  qtm1 = qt;
+  qt += QT_SIZE;
+
+  Eigen::Map<Eigen::Quaterniond> quat_tool0(qt);
+  Eigen::Map<Eigen::Quaterniond> quat_end(qtm1);
+  std::cout << quat_end_tool0 << std::endl;
+  Eigen::Map<Vec3d> trans_tool0(qt + 4);
+  Eigen::Map<Vec3d> trans_end(qtm1 + 4);
+
+  quat_tool0 = quat_end * quat_end_tool0;
+  trans_tool0 = quat_end * t_end_tool0 + trans_end;
 };
 
 } // namespace ampl

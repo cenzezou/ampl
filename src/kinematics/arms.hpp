@@ -23,6 +23,7 @@ public:
   void fk(const double *q, double *qts_link) override {};
   void set_link_end_tool0(const double *xyzrpy) override {};
   void set_tcp(const double *tf44, bool colmajor = true) override {};
+  void get_pose_tool0(double *tf44, bool colmajor = true) override {};
 };
 
 class ArmR6 : public ArmBase {
@@ -30,6 +31,7 @@ public:
   typedef Eigen::Vector<double, 6> Vec6d;
   typedef Eigen::Vector<double, 3> Vec3d;
   typedef Eigen::Matrix4d Mat4d;
+  typedef Eigen::Quaterniond quatd;
 
   ArmR6(std::string name) : info_{name + "_industrial_R6"} {};
   std::string info() override { return info_; };
@@ -43,6 +45,7 @@ public:
   void fk(const double *q, double *qts_link) override;
   void set_link_end_tool0(const double *xyzrpy) override;
   void set_tcp(const double *tf44, bool colmajor = true) override;
+  void get_pose_tool0(double *tf44, bool colmajor) override;
 
 public:
   static constexpr uint32_t K = 6;
@@ -62,6 +65,9 @@ public:
   Vec6d q_hi;
   Mat4d tf_link_end_tool0;
   Mat4d tf_link_end_tcp;
+
+  quatd quat_end_tool0;
+  Vec3d t_end_tool0;
 };
 
 class ArmR7 : public ArmBase {
@@ -77,6 +83,7 @@ public:
   void fk(const double *q, double *qts_link) override;
   void set_link_end_tool0(const double *xyzrpy) override;
   void set_tcp(const double *tf44, bool colmajor = true) override;
+  void get_pose_tool0(double *tf44, bool colmajor) override;
 
 public:
   std::string info_;

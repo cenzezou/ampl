@@ -42,6 +42,10 @@ void SE3_Adj(const Eigen::Matrix4<REAL> &SE3, Eigen::Matrix<REAL, 6, 6> &A);
 template <typename REAL>
 void SE3_inv(const Eigen::Matrix4<REAL> &SE3, Eigen::Matrix4<REAL> &inv);
 
+template <typename REAL>
+void transform_xyz(const REAL *rw, const REAL *t, const REAL *xyz,
+                   uint32_t nb_xyz, REAL *xyz_dst);
+
 auto constexpr intersectd_line3 = &intersect_line3<double>;
 auto constexpr intersectf_line3 = &intersect_line3<float>;
 auto constexpr intersectd_plane3 = &intersect_plane3<double>;
