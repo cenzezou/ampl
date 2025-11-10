@@ -66,7 +66,7 @@ void ArmR6::initialize_preset( const std::string &name )
   else if ( name == "yaskawa_gp12" )
     initialize_urdf( YASKAWA_GP12::urdf, YASKAWA_GP12::bounds, YASKAWA_GP12::tool0 );
   else if ( name == "elfin_10l" )
-    initialize_urdf( ELFIN_10L::urdf, ELFIN_10L::bounds );
+    initialize_urdf( ELFIN_10L::urdf, ELFIN_10L::bounds, ELFIN_10L::tool0 );
 };
 
 void ArmR6::set_joint_limits( const double *joint_limits_low, const double *joint_limits_hi )
@@ -85,7 +85,7 @@ void ArmR6::set_link_end_tool0( const double *xyzrpy )
   SE3_inv<double>( tf_link_end_tool0, tf_tool0_link_end );
 };
 
-void ArmR6::get_pose_tool0( double *tf44, bool colmajor ){
+void ArmR6::get_pose_tool0( double *tf44, bool colmajor ) {
 
 };
 void ArmR6::set_tcp( const double *tf44, bool colmajor )
@@ -235,7 +235,7 @@ unsigned char ArmR6::ik( const double *tf44_tool0_data, double *q_ik )
                       theta456B );
 
       uint8_t i_sol = 4 * i_theta1 + 2 * i_theta3 + 0;
-      double *q_sol = q_ik + (i_sol)*6;
+      double *q_sol = q_ik + ( i_sol ) * 6;
       q_sol[ 0 ]    = theta1[ i_theta1 ];
       q_sol[ 1 ]    = theta2;
       q_sol[ 2 ]    = theta3[ i_theta3 ];
