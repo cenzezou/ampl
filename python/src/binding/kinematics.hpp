@@ -16,46 +16,61 @@
 namespace nb = nanobind;
 using namespace nb::literals;
 
-struct PyArmBase {
+struct PyArmBase
+{
   using arr4f = nb::ndarray<float, nb::numpy, nb::shape<4, 4>, nb::c_contig>;
   using arr4d = nb::ndarray<double, nb::numpy, nb::shape<4, 4>, nb::c_contig>;
 
-  using anyXd = nb::ndarray<double, nb::numpy, nb::device::cpu>;
+  using anyXd  = nb::ndarray<double, nb::numpy, nb::device::cpu>;
   using anyXcd = nb::ndarray<const double, nb::numpy, nb::device::cpu>;
-  using matXd = nb::ndarray<double, nb::shape<-1, -1>, nb::device::cpu>;
+  using matXd  = nb::ndarray<double, nb::shape<-1, -1>, nb::device::cpu>;
   using matXcd = nb::ndarray<const double, nb::shape<-1, -1>, nb::device::cpu>;
-  using arrXd = nb::ndarray<double, nb::shape<-1>, nb::device::cpu>;
+  using arrXd  = nb::ndarray<double, nb::shape<-1>, nb::device::cpu>;
   using arrXcd = nb::ndarray<const double, nb::shape<-1>, nb::device::cpu>;
 
-private:
+ private:
   std::unique_ptr<ampl::ArmBase> m;
 
-public:
-  PyArmBase(const std::string &name, ampl::ArmType arm_type, uint32_t dof) {
-    m = ampl::ArmBase::create(name, arm_type, dof);
-    m->initialize_preset(name);
+ public:
+  PyArmBase( const std::string &name, ampl::ArmType arm_type, uint32_t dof )
+  {
+    m = ampl::ArmBase::create( name, arm_type, dof );
+    m->initialize_preset( name );
   };
   std::string info() { return m->info(); }
 
-  void fk_qt7(arrXcd q, matXd qts) { m->fk(q.data(), qts.data()); }
+  void fk_qt7( arrXcd q, matXd qts ) { m->fk( q.data(), qts.data() ); }
+  unsigned char ik( matXd tf_tool0, nb::ndarray<double, nb::shape<-1, -1>, nb::device::cpu> &q8 )
+  {
+    // double tf_tool0_colmajor[ 16 ];
+
+    Eigen::Matrix4d tf_tool0_colmajor;
+    for ( int k = 0; k < 16; k++ ) tf_tool0_colmajor.data()[ k ] = tf_tool0.data()[ k ];
+    tf_tool0_colmajor.transposeInPlace();
+
+    return m->ik( tf_tool0_colmajor.data(), q8.data() );
+  }
 };
 
-namespace ampl::binding {
+namespace ampl::binding
+{
 
-inline void init_kinematics(nanobind::module_ &pymodule) {
+inline void init_kinematics( nanobind::module_ &pymodule )
+{
+  nb::enum_<ampl::ArmType>( pymodule, "ArmType" )
+      .value( "Humanoid7", ampl::ArmType::Humanoid7 )
+      .value( "Industrial6", ampl::ArmType::Industrial6 )
+      .value( "UR6", ampl::ArmType::UR6 )
+      .export_values();  // Optional: exports
 
-  nb::enum_<ampl::ArmType>(pymodule, "ArmType")
-      .value("Humanoid7", ampl::ArmType::Humanoid7)
-      .value("Industrial6", ampl::ArmType::Industrial6)
-      .value("UR6", ampl::ArmType::UR6)
-      .export_values(); // Optional: exports
-
-  nb::class_<PyArmBase>(pymodule, "ArmBase")
+  nb::class_<PyArmBase>( pymodule, "ArmBase" )
       // Bind the constructor
-      .def(nb::init<const std::string &, ampl::ArmType, uint32_t>())
-      .def("info", &PyArmBase::info)
-      .def("fk_qt7", &PyArmBase::fk_qt7);
+      .def( nb::init<const std::string &, ampl::ArmType, uint32_t>() )
+      .def( "info", &PyArmBase::info )
+      .def( "fk_qt7", &PyArmBase::fk_qt7 )
+      .def( "ik", &PyArmBase::ik );
+  ;
   ;
 }
-} // namespace ampl::binding
+}  // namespace ampl::binding
 #endif

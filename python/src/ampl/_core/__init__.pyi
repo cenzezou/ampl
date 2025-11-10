@@ -1,5 +1,5 @@
 import enum
-from typing import Annotated
+from typing import Annotated, overload
 
 import numpy
 from numpy.typing import NDArray
@@ -28,4 +28,27 @@ class ArmBase:
 
     def fk_qt7(self, arg0: Annotated[NDArray[numpy.float64], dict(shape=(None,), device='cpu', writable=False)], arg1: Annotated[NDArray[numpy.float64], dict(shape=(None, None), device='cpu')], /) -> None: ...
 
+    def ik(self, arg0: Annotated[NDArray[numpy.float64], dict(shape=(None, None), device='cpu')], arg1: Annotated[NDArray[numpy.float64], dict(shape=(None, None), device='cpu')], /) -> int: ...
+
 def transform_xyz(xyz_src: Annotated[NDArray[numpy.float32], dict(shape=(None, 3), device='cpu')], xyz_dst: Annotated[NDArray[numpy.float32], dict(shape=(None, 3), device='cpu')], rwt: Annotated[NDArray[numpy.float32], dict(device='cpu')]) -> None: ...
+
+@overload
+def tf44_to_qt7(tf44: Annotated[NDArray[numpy.float32], dict(shape=(4, 4))]) -> Annotated[NDArray[numpy.float32], dict(shape=(7), order='C')]:
+    """return qt7"""
+
+@overload
+def tf44_to_qt7(tf44: Annotated[NDArray[numpy.float64], dict(shape=(4, 4))]) -> Annotated[NDArray[numpy.float64], dict(shape=(7), order='C')]: ...
+
+@overload
+def qt7_to_tf44(qt7: Annotated[NDArray[numpy.float64], dict(shape=(None,))]) -> Annotated[NDArray[numpy.float64], dict(shape=(4, 4), order='C')]:
+    """return tf44"""
+
+@overload
+def qt7_to_tf44(qt7: Annotated[NDArray[numpy.float32], dict(shape=(None,))]) -> Annotated[NDArray[numpy.float32], dict(shape=(4, 4), order='C')]: ...
+
+@overload
+def wxyz_t_to_tf44(wxyz: Annotated[NDArray[numpy.float64], dict(shape=(None,))], t: Annotated[NDArray[numpy.float64], dict(shape=(None,))]) -> Annotated[NDArray[numpy.float64], dict(shape=(4, 4), order='C')]:
+    """return tf44"""
+
+@overload
+def wxyz_t_to_tf44(wxyz: Annotated[NDArray[numpy.float32], dict(shape=(None,))], t: Annotated[NDArray[numpy.float32], dict(shape=(None,))]) -> Annotated[NDArray[numpy.float32], dict(shape=(4, 4), order='C')]: ...

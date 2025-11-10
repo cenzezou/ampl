@@ -33,3 +33,6 @@ from ._utils.io import read_polylines as read_polylines
 
 
 from ._core import transform_xyz as transform_xyz
+from ._core import tf44_to_qt7 as tf44_to_qt7
+from ._core import qt7_to_tf44 as qt7_to_tf44
+from ._core import wxyz_t_to_tf44 as wxyz_t_to_tf44
