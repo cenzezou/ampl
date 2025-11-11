@@ -65,7 +65,7 @@ void ArmR7::set_link_end_tool0( const double *xyzrpy )
 {
   xyzrpy2tf<double>( xyzrpy, xyzrpy + 3, tf_link_end_tool0 );
 
-  quat_end_tool0 = quatd( tf_link_end_tool0.topLeftCorner<3, 3>() );
+  quat_end_tool0 = Quatd( tf_link_end_tool0.topLeftCorner<3, 3>() );
   t_end_tool0    = tf_link_end_tool0.topRightCorner<3, 1>();
 
   SE3_inv<double>( tf_link_end_tool0, tf_tool0_link_end );
@@ -85,6 +85,13 @@ void ArmR7::set_tcp( const double *tf44, bool colmajor )
   }
 };
 void ArmR7::get_pose_tool0( double *tf44, bool colmajor ){};
+
+void ArmR7::set_base( const double *tf44, bool colmajor )
+{
+  tf_base_world.setTf44( tf44 );
+  tf_world_base = tf_base_world;
+  tf_world_base.inverseInPlace();
+};
 
 void ArmR7::fk( const double *q, double *qts_link )
 {

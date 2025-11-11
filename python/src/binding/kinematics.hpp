@@ -24,6 +24,7 @@ struct PyArmBase
   using anyXd  = nb::ndarray<double, nb::numpy, nb::device::cpu>;
   using anyXcd = nb::ndarray<const double, nb::numpy, nb::device::cpu>;
   using matXd  = nb::ndarray<double, nb::shape<-1, -1>, nb::device::cpu>;
+  using mat4d  = nb::ndarray<double, nb::shape<4, 4>, nb::device::cpu>;
   using matXcd = nb::ndarray<const double, nb::shape<-1, -1>, nb::device::cpu>;
   using arrXd  = nb::ndarray<double, nb::shape<-1>, nb::device::cpu>;
   using arrXcd = nb::ndarray<const double, nb::shape<-1>, nb::device::cpu>;
@@ -40,6 +41,13 @@ struct PyArmBase
   std::string info() { return m->info(); }
 
   void fk_qt7( arrXcd q, matXd qts ) { m->fk( q.data(), qts.data() ); }
+  void set_base( matXd tf_world_base )
+  {
+    Eigen::Matrix4d tf_world_base_colmajor;
+    for ( int k = 0; k < 16; k++ ) tf_world_base_colmajor.data()[ k ] = tf_world_base.data()[ k ];
+    tf_world_base_colmajor.transposeInPlace();
+    m->set_base( tf_world_base_colmajor.data(), true );
+  }
   unsigned char ik( matXd tf_tool0, nb::ndarray<double, nb::shape<-1, -1>, nb::device::cpu> &q8 )
   {
     // double tf_tool0_colmajor[ 16 ];
@@ -68,7 +76,8 @@ inline void init_kinematics( nanobind::module_ &pymodule )
       .def( nb::init<const std::string &, ampl::ArmType, uint32_t>() )
       .def( "info", &PyArmBase::info )
       .def( "fk_qt7", &PyArmBase::fk_qt7 )
-      .def( "ik", &PyArmBase::ik );
+      .def( "ik", &PyArmBase::ik )
+      .def( "set_base", &PyArmBase::set_base );
   ;
   ;
 }

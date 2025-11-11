@@ -30,14 +30,12 @@ class ArmBase
                                 const double *xyzrpy_tool0 = nullptr ) = 0;
 
   virtual void initialize_preset( const std::string &name ) = 0;
-
   /**
    * @brief
    * @param joint_limits_low
    * @param joint_limits_hi
    */
   virtual void set_joint_limits( const double *joint_limits_low, const double *joint_limits_hi ) = 0;
-
   /**
    * @brief
    * @param q array of dof lenght
@@ -57,6 +55,8 @@ class ArmBase
   virtual void set_link_end_tool0( const double *xyzrpy )           = 0;
   virtual void set_tcp( const double *tf44, bool colmajor = true )  = 0;
   virtual void get_pose_tool0( double *tf44, bool colmajor = true ) = 0;
+
+  virtual void set_base( const double *tf44, bool colmajor = true ) = 0;
 };
 }  // namespace ampl
 

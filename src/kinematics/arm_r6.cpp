@@ -12,7 +12,6 @@
 
 namespace ampl
 {
-
 void ArmR6::initialize_urdf( const double *urdf, const double *joint_limits, const double *xyzrpy_tool0 )
 {
   tfs_cache        = urdf2tfs<K, double>( urdf );
@@ -34,7 +33,6 @@ void ArmR6::initialize_urdf( const double *urdf, const double *joint_limits, con
   qts_cache_f                       = urdf2qts<K, double, float>( urdf );
   qts_cache                         = urdf2qts<K, double, double>( urdf );
   twists_cache                      = urdf2axisarr<K, double>( urdf );
-
   if ( joint_limits )
   {
     memcpy( q_lo.data(), joint_limits, K * sizeof( double ) );
@@ -55,6 +53,9 @@ void ArmR6::initialize_urdf( const double *urdf, const double *joint_limits, con
     set_link_end_tool0( xyzrpy_tool0 );
   }
   tf_link_end_tcp = tf_link_end_tool0;
+
+  tf_base_world.setIdentity();
+  tf_world_base.setIdentity();
 
   // printf( "# DEBUG initialize_urdf \n" );
   // std::cout << "q_wrist " << q_wrist.transpose() << std::endl;
@@ -79,13 +80,13 @@ void ArmR6::set_link_end_tool0( const double *xyzrpy )
 {
   xyzrpy2tf<double>( xyzrpy, xyzrpy + 3, tf_link_end_tool0 );
 
-  quat_end_tool0 = quatd( tf_link_end_tool0.topLeftCorner<3, 3>() );
+  quat_end_tool0 = Quatd( tf_link_end_tool0.topLeftCorner<3, 3>() );
   t_end_tool0    = tf_link_end_tool0.topRightCorner<3, 1>();
 
   SE3_inv<double>( tf_link_end_tool0, tf_tool0_link_end );
 };
 
-void ArmR6::get_pose_tool0( double *tf44, bool colmajor ) {
+void ArmR6::get_pose_tool0( double *tf44, bool colmajor ){
 
 };
 void ArmR6::set_tcp( const double *tf44, bool colmajor )
@@ -103,6 +104,13 @@ void ArmR6::set_tcp( const double *tf44, bool colmajor )
   }
 };
 
+void ArmR6::set_base( const double *tf44, bool colmajor )
+{
+  tf_world_base.setTf44( tf44 );
+  tf_base_world = tf_world_base;
+  tf_base_world.inverseInPlace();
+};
+
 }  // namespace ampl
 
 namespace ampl
@@ -110,13 +118,20 @@ namespace ampl
 
 void ArmR6::fk( const double *q, double *qts_link )
 {
+  std::cout << tf_world_base.m << std::endl;
   double *qt = qts_link;
   double *qtm1;
   Eigen::Map<const Eigen::Quaterniond> quat0_cache( qts_cache.data() );
+  Eigen::Map<const Vec3d> trans0_cache( qts_cache.data() + 4 );
+
   Eigen::Map<const Vec3d> axis0_cache( twists_cache.data() );
+
   Eigen::Map<Eigen::Quaterniond> quat0( qt );
-  quat0 = quat0_cache * Eigen::Quaterniond( Eigen::AngleAxisd( q[ 0 ], axis0_cache ) );
-  memcpy( qt + 4, qts_cache.data() + 4, 3 * sizeof( double ) );
+  Eigen::Map<Vec3d> trans0( qt + 4 );
+
+  quat0  = tf_world_base.q * quat0_cache * Eigen::Quaterniond( Eigen::AngleAxisd( q[ 0 ], axis0_cache ) );
+  trans0 = tf_world_base.q * trans0_cache + tf_world_base.t;
+
   for ( auto k = 1U; k < K; k++ )
   {
     qtm1 = qt;
@@ -151,7 +166,7 @@ void ArmR6::fk( const double *q, double *qts_link )
 //       omg( 0 ) * omg( 1 ), -( omg( 0 ) * omg( 0 ) ) - ( omg( 2 ) * omg( 2 ) ), omg( 1 ) * omg( 2 ), omg( 0 ) * omg( 2
 //       ), omg( 1 ) * omg( 2 ), -( omg( 0 ) * omg( 0 ) ) - ( omg( 1 ) * omg( 1 ) );
 // }
-unsigned char ArmR6::ik( const double *tf44_tool0_data, double *q_ik )
+unsigned char ArmR6::ik( const double *tf44_world_tool0_data, double *q_ik )
 {
   constexpr unsigned char UINT8_ONE = (unsigned char)1;
   Eigen::Matrix4d g;
@@ -176,14 +191,12 @@ unsigned char ArmR6::ik( const double *tf44_tool0_data, double *q_ik )
   double x1, y1, z1, xyz_sqrt, y1_plus_z1, dist_q_r;
   unsigned char ik_status = 0b0;
 
-  Mat4d tf44_link_end = Eigen::Map<const Mat4d>( tf44_tool0_data ) * tf_tool0_link_end;
+  Mat4d tf44_link_end = tf_base_world.m * Eigen::Map<const Mat4d>( tf44_world_tool0_data ) * tf_tool0_link_end;
 
   SE3_inv( link_end_fk_home, g );
   g = (tf44_link_end)*g;
   q = g.topLeftCorner<3, 3>() * q_wrist + g.topRightCorner<3, 1>();
 
-  // std::cout << "link_end_fk_home" << std::endl;
-  // std::cout << link_end_fk_home << std::endl;
   // std::cout << "g" << std::endl;
   // std::cout << g << std::endl;
 
@@ -235,7 +248,7 @@ unsigned char ArmR6::ik( const double *tf44_tool0_data, double *q_ik )
                       theta456B );
 
       uint8_t i_sol = 4 * i_theta1 + 2 * i_theta3 + 0;
-      double *q_sol = q_ik + ( i_sol ) * 6;
+      double *q_sol = q_ik + (i_sol)*6;
       q_sol[ 0 ]    = theta1[ i_theta1 ];
       q_sol[ 1 ]    = theta2;
       q_sol[ 2 ]    = theta3[ i_theta3 ];

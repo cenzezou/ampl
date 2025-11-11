@@ -1,7 +1,7 @@
 import ampl
 import numpy as np
 
-import pamp
+#import pamp
 
 
 def test_billbot():
@@ -38,24 +38,44 @@ def test_billbot():
 
 
 def test_arm6():
+    import trimesh
     robot = ampl.ArmBase("yaskawa_gp12", ampl.ArmType.Industrial6, 6)    
-    qts = np.zeros((8, 7), dtype=np.float64)
-    q = np.array([[0.1]*6], dtype=np.float64)
-    print(robot.info())
-    robot.fk_qt7(q[0], qts[1:])
-    q8=np.zeros((8, 6), dtype=np.float64)
-    tf_tool0=pamp.qt7_to_tf44(qts[-1])
+    qts = np.zeros((7, 7), dtype=np.float64)
+    q = np.array([[0.4]*6], dtype=np.float64)
+
+    tf_base=trimesh.transformations.rotation_matrix(np.pi/4,[0,0,1]).astype(np.float64)
+    tf_base[2,3]=0.0
+    
+
+    robot.set_base(tf_base)   
+    
+    robot.fk_qt7(q[0], qts)
+    print(qts[:,-3:])
+    
+    q8=np.zeros((8, 6), dtype=np.float64)    
+    tf_tool0=ampl.qt7_to_tf44(qts[-1])
     iks=robot.ik(tf_tool0,q8)
     print(q8)
-    print(iks)
+    #print(iks)
     
     DIR_ROBOT_DATABASE= "/home/czhou/Projects/pamp_binding/database/"
 
     dir_mesh = F"{DIR_ROBOT_DATABASE}/robot/yaskawa_gp12/visual"
     dir_wp = "/home/czhou/Playground"
 
+    print(tf_base)
 
-    robot.fk_qt7(q8[3], qts[1:])
+    
+
+    
+
+    
+
+    #
+
+    
+
+    robot.fk_qt7(q[0], qts)
 
     meshes = [ampl.read_trimesh(f"{dir_mesh}/link_{i}.ply") for i in range(1, 7)]
     meshes.append(ampl.read_trimesh(
@@ -63,12 +83,12 @@ def test_arm6():
 
     for i, m in enumerate(meshes):
         v, f = m
-        ampl.transform_xyz(v, v, qts[i+1])
+        ampl.transform_xyz(v, v, qts[i])
         ampl.write_trimesh(f"{dir_wp}/{i}.ply", v, f)
 
 
 
 if __name__ == "__main__":
-    test_billbot()        
+    test_arm6()        
 
 

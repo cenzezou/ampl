@@ -139,6 +139,13 @@ int main( int argc, char *argv[] )
   std::unique_ptr<ampl::ArmBase> m;
   m = ampl::ArmBase::create( std::string( "abb_irb6700_150_320" ), ampl::ArmType::Industrial6, 6 );
 
+  Eigen::Matrix4d tf;
+  tf.setIdentity();
+  tf.topLeftCorner<3, 3>() = Eigen::AngleAxisd( 0.1, Eigen::Vector3d::Random().normalized() ).matrix();
+  tf.topRightCorner<3, 1>().setRandom();
+
+  m->set_base( tf.data() );
+
   std::cout << m->info() << std::endl;
 
   Eigen::Matrix<double, 7, 7> qts_link;
