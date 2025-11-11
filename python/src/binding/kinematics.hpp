@@ -69,15 +69,16 @@ inline void init_kinematics( nanobind::module_ &pymodule )
       .value( "Humanoid7", ampl::ArmType::Humanoid7 )
       .value( "Industrial6", ampl::ArmType::Industrial6 )
       .value( "UR6", ampl::ArmType::UR6 )
-      .export_values();  // Optional: exports
+      .export_values();
 
   nb::class_<PyArmBase>( pymodule, "ArmBase" )
-      // Bind the constructor
-      .def( nb::init<const std::string &, ampl::ArmType, uint32_t>() )
+      .def( nb::init<const std::string &, ampl::ArmType, uint32_t>(), "arm_preset"_a, "arm_type"_a, "dof"_a,
+            "create a preset arm solver" )
       .def( "info", &PyArmBase::info )
-      .def( "fk_qt7", &PyArmBase::fk_qt7 )
-      .def( "ik", &PyArmBase::ik )
-      .def( "set_base", &PyArmBase::set_base );
+      .def( "fk_links", &PyArmBase::fk_qt7, "q"_a, "arr_rwt"_a,
+            "len(q) >= dof, arr_rwt.shape = (dof+1,7), rwt=[rx,ry,rz,w,tx,ty,tz]" )
+      .def( "ik", &PyArmBase::ik, "m44_world_tool0"_a, "arr_qik"_a, "arr_qik.shape = (8,dof)" )
+      .def( "set_base", &PyArmBase::set_base, "m44_world_base"_a, "set pose of arm base in world" );
   ;
   ;
 }

@@ -3,6 +3,7 @@ from .pyply import _open_stream
 import numpy as np
 from typing import Tuple
 from .pyply import PlyData, PlyElement
+from .._core import get_stl_data
 
 
 def write_ply_xyzrgbnxnynz(ply_filename, points, layout_bgr=False):
@@ -170,7 +171,7 @@ def write_trimesh(ply_filename: str, V: np.ndarray, F: np.ndarray):
     write_ply_VF(ply_filename, V, F)
 
 
-def read_trimesh(ply_filename: str):
+def read_trimesh(trimesh_filename: str):
     """read a V,F triangle mesh from a binary .ply
 
     Args:
@@ -179,7 +180,16 @@ def read_trimesh(ply_filename: str):
     Returns:
         (vertices,faces) (np.ndarray, np.ndarray): vertices = (nV,3) float32 and faces = (nF,3) uint32
     """
-    return read_ply_VF(ply_filename)
+
+    import os
+    _, ext = os.path.splitext(trimesh_filename)
+
+    if ext.casefold() == ".ply".casefold():
+        return read_ply_VF(trimesh_filename)
+    elif ext.casefold() == ".stl".casefold():
+        return get_stl_data(trimesh_filename)
+    else:
+        return None, None
 
 
 def read_pointcloud(ply_filename: str):

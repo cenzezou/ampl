@@ -4,15 +4,15 @@ AMPL = Another Motion Planning Library
 __all__ = [
     "version",
     "ArmBase",
-"read_trimesh",
-"write_trimesh",
-"write_pointcloud",
-"read_pointcloud",
-"write_polylines",
-"read_polylines",
+    "read_trimesh",
+    "write_trimesh",
+    "write_pointcloud",
+    "read_pointcloud",
+    "write_polylines",
+    "read_polylines",
 
-"transform_xyz"
-   
+    "transform_xyz"
+
 ]
 # from . import _core
 # from . import _utils
@@ -22,8 +22,7 @@ from ._core import version as version
 from ._core import ArmBase as ArmBase
 from ._core import ArmType as ArmType
 
-
-
+from ._core import get_stl_data as get_stl_data
 from ._utils.io import read_trimesh as read_trimesh
 from ._utils.io import write_trimesh as write_trimesh
 from ._utils.io import write_pointcloud as write_pointcloud

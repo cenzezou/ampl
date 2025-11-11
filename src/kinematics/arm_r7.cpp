@@ -92,7 +92,7 @@ void ArmR7::set_tcp( const double *tf44, bool colmajor )
     tf_link_end_tcp = tf_link_end_tool0 * tf_link_end_tcp;
   }
 };
-void ArmR7::get_pose_tool0( double *tf44, bool colmajor ){};
+void ArmR7::get_pose_tool0( double *tf44, bool colmajor ) {};
 
 void ArmR7::set_base( const double *tf44, bool colmajor )
 {
@@ -244,25 +244,43 @@ unsigned char ArmR7::ik( const double *tf44_world_tool0_data, double *q_ik )
         q_sol[ 5 ]    = -1 * phi65[ i_phi65 * 2 + 0 ];
         q_sol[ 6 ]    = q_last;
 
+        if ( q_sol[ 0 ] > M_PI ) q_sol[ 0 ] -= TWO_PI;
+        if ( q_sol[ 1 ] > M_PI ) q_sol[ 1 ] -= TWO_PI;
+        if ( q_sol[ 2 ] > M_PI ) q_sol[ 2 ] -= TWO_PI;
+        if ( q_sol[ 0 ] < -M_PI ) q_sol[ 0 ] += TWO_PI;
+        if ( q_sol[ 1 ] < -M_PI ) q_sol[ 1 ] += TWO_PI;
+        if ( q_sol[ 2 ] < -M_PI ) q_sol[ 2 ] += TWO_PI;
+
+        if ( q_sol[ 3 ] > M_PI ) q_sol[ 3 ] -= TWO_PI;
+        if ( q_sol[ 4 ] > M_PI ) q_sol[ 4 ] -= TWO_PI;
+        if ( q_sol[ 5 ] > M_PI ) q_sol[ 5 ] -= TWO_PI;
+        if ( q_sol[ 3 ] < -M_PI ) q_sol[ 3 ] += TWO_PI;
+        if ( q_sol[ 4 ] < -M_PI ) q_sol[ 4 ] += TWO_PI;
+        if ( q_sol[ 5 ] < -M_PI ) q_sol[ 5 ] += TWO_PI;
+
         // std::cout << "# [IKPoE] " << i_theta123 << i_theta4 << i_phi65 << "\t = \t";
 
+        // for ( int kk = 0; kk < 6; kk++ )
+        // {
+        //   q_sol[ kk ] = std::atan2( std::sin( q_sol[ kk ] ), std::cos( q_sol[ kk ] ) );
+
+        //   // printf( "%05.6f\t", q_sol[ kk ] );
+        // }
+
+        // std::cout << q_hi.transpose() << std::endl;
+        bool invalid = false;
         for ( int kk = 0; kk < 6; kk++ )
         {
-          q_sol[ kk ] = std::atan2( std::sin( q_sol[ kk ] ), std::cos( q_sol[ kk ] ) );
+          if ( q_sol[ kk ] > q_hi[ kk ] ) invalid = true;  // goto SKIP_SET_IK_VALID;
 
-          // printf( "%05.6f\t", q_sol[ kk ] );
-        }
-
-        for ( int kk = 0; kk < 6; kk++ )
-        {
-          if ( q_sol[ kk ] > q_hi[ kk ] ) goto SKIP_SET_IK_VALID;
-
-          if ( q_sol[ kk ] < q_lo[ kk ] ) goto SKIP_SET_IK_VALID;
+          if ( q_sol[ kk ] < q_lo[ kk ] ) invalid = true;  // goto SKIP_SET_IK_VALID;
         }
         // std::cout << std::endl;
-
-        ik_status = ik_status | ( UINT8_ONE << i_sol );
-      SKIP_SET_IK_VALID:
+        if ( !invalid )
+        {
+          ik_status = ik_status | ( UINT8_ONE << i_sol );
+        }
+        // SKIP_SET_IK_VALID:
         continue;
 
         // std::cout << "# [IKPoE] " << i_theta123 << i_theta4 << i_phi65 << ": q = "
@@ -273,7 +291,7 @@ unsigned char ArmR7::ik( const double *tf44_world_tool0_data, double *q_ik )
       }
     }
   }
-
+  // print_bits( ik_status );
   return ik_status;
 };
 }  // namespace ampl

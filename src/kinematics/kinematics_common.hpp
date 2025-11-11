@@ -3,15 +3,17 @@
 #include <iostream>
 #include <cmath>
 #define QT_SIZE 7
-#define print_bits( x )                                                \
-  do                                                                   \
-  {                                                                    \
-    unsigned long long a__ = ( x );                                    \
-    size_t bits__          = sizeof( x ) * 8;                          \
-    printf( #x ": " );                                                 \
-    while ( bits__-- ) putchar( a__ &( 1ULL << bits__ ) ? '1' : '0' ); \
-    putchar( '\n' );                                                   \
+#define print_bits( x )                                                 \
+  do                                                                    \
+  {                                                                     \
+    unsigned long long a__ = ( x );                                     \
+    size_t bits__          = sizeof( x ) * 8;                           \
+    printf( #x ": " );                                                  \
+    while ( bits__-- ) putchar( a__ & ( 1ULL << bits__ ) ? '1' : '0' ); \
+    putchar( '\n' );                                                    \
   } while ( 0 )
+
+#define TWO_PI 6.28318530717958647693
 namespace ampl::fast_math
 {
 std::array<std::array<double, 6>, 5> constexpr C_SIN_EST_COEFF = {

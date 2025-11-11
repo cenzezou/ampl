@@ -34,11 +34,7 @@ find_package(nanobind CONFIG REQUIRED)
 
 #enable_language(CUDA)
 nanobind_add_module(_core_ext
-src/binding/python.cc
-
-
-
-)
+src/binding/python.cc)
 
 
 target_link_libraries(_core_ext PRIVATE  Eigen3::Eigen ampl::ampl  )

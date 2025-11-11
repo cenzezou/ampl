@@ -181,10 +181,12 @@ struct TIANJI_LEFT
 
   };
   static constexpr const double bounds[ dof * 2 ] = {
-      //   -3.1067, -2.0944, -3.1067, -2.5307, -3.1067, -1.0472, -1.5708,   //
-      //   3.1067,  2.0944,  3.1067,  1.0472,  3.1067,  1.0472,  1.5708
-      -M_PI, -M_PI, -M_PI, -M_PI, -M_PI, -M_PI, -M_PI,  //
-      M_PI,  M_PI,  M_PI,  M_PI,  M_PI,  M_PI,  M_PI    //
+      -3.1067, -2.0944, -3.1067, -2.5307,
+      -3.1067, -1.0472, -1.5708,  //
+      3.1067,  2.0944,  3.1067,  1.0472,
+      3.1067,  1.0472,  1.5708  //
+      //   -M_PI, -M_PI, -M_PI, -M_PI, -M_PI, -M_PI, -M_PI,  //
+      //   M_PI,  M_PI,  M_PI,  M_PI,  M_PI,  M_PI,  M_PI    //
 
   };  // NOAQ
   static constexpr const double tool0[ 6 ] = { 0.0, -0.095, 0, M_PI_2, M_PI_2, 0 };
