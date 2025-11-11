@@ -15,7 +15,7 @@ enum class ArmType
 };
 
 static const char *ArmPresetIndustrial6[ 3 ] = { "abb_irb6700_150_320", "yaskawa_gp12", "elfin_10l" };
-static const char *ArmPresetHumanoid7[ 2 ]   = { "hillbot_left", "hillbot_right" };
+static const char *ArmPresetHumanoid7[ 3 ]   = { "hillbot_left", "hillbot_right", "tianji_left" };
 
 class ArmBase
 {

@@ -50,10 +50,18 @@ void ArmR7::initialize_urdf( const double *urdf, const double *joint_limits, con
     set_link_end_tool0( xyzrpy_tool0 );
   }
   tf_link_end_tcp = tf_link_end_tool0;
+
+  tf_base_world.setIdentity();
+  tf_world_base.setIdentity();
 }
 void ArmR7::initialize_preset( const std::string &name )
 {
-  if ( name == "hillbot_left" ) initialize_urdf( HILLBOT_LEFT::urdf, HILLBOT_LEFT::bounds, HILLBOT_LEFT::tool0 );
+  if ( name == "hillbot_left" )
+    initialize_urdf( HILLBOT_LEFT::urdf, HILLBOT_LEFT::bounds, HILLBOT_LEFT::tool0 );
+  else if ( name == "hillbot_right" )
+    initialize_urdf( HILLBOT_RIGHT::urdf, HILLBOT_RIGHT::bounds, HILLBOT_RIGHT::tool0 );
+  else if ( name == "tianji_left" )
+    initialize_urdf( TIANJI_LEFT::urdf, TIANJI_LEFT::bounds, TIANJI_LEFT::tool0 );
 };
 void ArmR7::set_joint_limits( const double *joint_limits_low, const double *joint_limits_hi )
 {
@@ -88,20 +96,34 @@ void ArmR7::get_pose_tool0( double *tf44, bool colmajor ){};
 
 void ArmR7::set_base( const double *tf44, bool colmajor )
 {
-  tf_base_world.setTf44( tf44 );
-  tf_world_base = tf_base_world;
-  tf_world_base.inverseInPlace();
+  tf_world_base.setTf44( tf44 );
+  tf_base_world = tf_world_base;
+  tf_base_world.inverseInPlace();
 };
 
 void ArmR7::fk( const double *q, double *qts_link )
 {
+  // double *qt = qts_link;
+  // double *qtm1;
+  // Eigen::Map<const Eigen::Quaterniond> quat0_cache( qts_cache.data() );
+  // Eigen::Map<const Vec3d> axis0_cache( twists_cache.data() );
+  // Eigen::Map<Eigen::Quaterniond> quat0( qt );
+  // quat0 = quat0_cache * Eigen::Quaterniond( Eigen::AngleAxisd( q[ 0 ], axis0_cache ) );
+  // memcpy( qt + 4, qts_cache.data() + 4, 3 * sizeof( double ) );
+
   double *qt = qts_link;
   double *qtm1;
   Eigen::Map<const Eigen::Quaterniond> quat0_cache( qts_cache.data() );
+  Eigen::Map<const Vec3d> trans0_cache( qts_cache.data() + 4 );
+
   Eigen::Map<const Vec3d> axis0_cache( twists_cache.data() );
+
   Eigen::Map<Eigen::Quaterniond> quat0( qt );
-  quat0 = quat0_cache * Eigen::Quaterniond( Eigen::AngleAxisd( q[ 0 ], axis0_cache ) );
-  memcpy( qt + 4, qts_cache.data() + 4, 3 * sizeof( double ) );
+  Eigen::Map<Vec3d> trans0( qt + 4 );
+
+  quat0  = tf_world_base.q * quat0_cache * Eigen::Quaterniond( Eigen::AngleAxisd( q[ 0 ], axis0_cache ) );
+  trans0 = tf_world_base.q * trans0_cache + tf_world_base.t;
+
   for ( auto k = 1U; k < K; k++ )
   {
     qtm1 = qt;
@@ -133,7 +155,7 @@ void ArmR7::fk( const double *q, double *qts_link )
 
 ;
 
-unsigned char ArmR7::ik( const double *tf44_tool0_data, double *q_ik )
+unsigned char ArmR7::ik( const double *tf44_world_tool0_data, double *q_ik )
 {
   constexpr unsigned char UINT8_ONE  = (unsigned char)1;
   constexpr unsigned char UINT8_ZERO = (unsigned char)0;
@@ -151,7 +173,7 @@ unsigned char ArmR7::ik( const double *tf44_tool0_data, double *q_ik )
 
   //  std::cout << q_last << std::endl;
 
-  Mat4d tf44_base_link_end = Eigen::Map<const Mat4d>( tf44_tool0_data ) * tf_tool0_link_end;
+  Mat4d tf44_base_link_end = tf_base_world.m * Eigen::Map<const Mat4d>( tf44_world_tool0_data ) * tf_tool0_link_end;
 
   Eigen::Matrix4d tf_link_end_base;
   SE3_inv( tf44_base_link_end, tf_link_end_base );
@@ -252,6 +274,6 @@ unsigned char ArmR7::ik( const double *tf44_tool0_data, double *q_ik )
     }
   }
 
-  return UINT8_ZERO;
+  return ik_status;
 };
 }  // namespace ampl

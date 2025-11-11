@@ -118,7 +118,6 @@ namespace ampl
 
 void ArmR6::fk( const double *q, double *qts_link )
 {
-  std::cout << tf_world_base.m << std::endl;
   double *qt = qts_link;
   double *qtm1;
   Eigen::Map<const Eigen::Quaterniond> quat0_cache( qts_cache.data() );

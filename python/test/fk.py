@@ -41,7 +41,7 @@ def test_arm6():
     import trimesh
     robot = ampl.ArmBase("yaskawa_gp12", ampl.ArmType.Industrial6, 6)    
     qts = np.zeros((7, 7), dtype=np.float64)
-    q = np.array([[0.4]*6], dtype=np.float64)
+    q = np.array([[0.0]*6], dtype=np.float64)
 
     tf_base=trimesh.transformations.rotation_matrix(np.pi/4,[0,0,1]).astype(np.float64)
     tf_base[2,3]=0.0
@@ -89,6 +89,6 @@ def test_arm6():
 
 
 if __name__ == "__main__":
-    test_arm6()        
+    test_billbot()        
 
 
