@@ -9,12 +9,10 @@ import trimesh
 
 def main_arm7():
     """Main function for basic IK."""
-    ROBOT_TAG = "tianji_left"
-    path_urdf = (
-        f"/home/czhou/Projects/Robotics/pamp_binding/database/robot/tianji_left/tanji_left.urdf"
-    )
-    # ROBOT_TAG="hillbot_left"
-    # path_urdf= f"/home/czhou/Data/mplib/SoledadAssets-main/hillbot_beta1.0_v2/hillbot_left-link_arm.urdf"
+    # ROBOT_TAG = "tianji_left"
+    # path_urdf = f"/home/czhou/Data/mplib/tianji/urdf/urdf.urdf"
+    ROBOT_TAG = "hillbot_left"
+    path_urdf = f"/home/czhou/Data/mplib/SoledadAssets-main/hillbot_beta1.0_v2/hillbot_left-link_arm.urdf"
     urdf = yourdfpy.urdf.URDF.load(path_urdf)
     dof = 7
     arm = ampl.ArmBase(ROBOT_TAG, ampl.ArmType.Humanoid7, dof)
@@ -42,17 +40,17 @@ def main_arm7():
                 1.310018402203963,
             ],
             [0.0, 0.0, 0.0, 1.0],
-        ], dtype=np.float64)
+        ],
+        dtype=np.float64,
+    )
 
     q = np.array([0.0001] * dof, dtype=np.float64)  # a random pose to start
     arm.set_base(tf_world_base)
     if 0:
-        mesh = trimesh.load_mesh(
-            "/home/czhou/Data/A/surf_B/uv_clip_textured.obj")
+        mesh = trimesh.load_mesh("/home/czhou/Data/A/surf_B/uv_clip_textured.obj")
         mesh.vertex_normals
         mesh.apply_scale(1e-3).apply_transform(
-            trimesh.transformations.rotation_matrix(
-                np.pi, [0, 1, 0], [0, 0, 0.5])
+            trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0], [0, 0, 0.5])
         ).apply_translation([0, 0.7, 0.5])
     which_ik = 1  # pick which ik from 8 analytic solutions
     arm.fk_links(q, qtLink)  # fk
@@ -67,16 +65,16 @@ def main_arm7():
 
     server = viser.ViserServer()
     server.scene.add_grid("/ground", width=2, height=2)
-    whichik_handle = server.gui.add_slider(
-        "#IK", initial_value=1, min=0, max=7, step=1)
+    whichik_handle = server.gui.add_slider("#IK", initial_value=1, min=0, max=7, step=1)
     qlast_handle = server.gui.add_slider(
-        "q last", initial_value=0, disabled=False, min=-1.5, max=1.5, step=0.05
+        "q last", initial_value=5, disabled=False, min=-1.5, max=1.5, step=0.05
     )
     # server.scene.add_mesh_trimesh("secne", mesh)
     robot_base = server.scene.add_frame("/base_link", show_axes=False)
     urdf_vis = ViserUrdf(server, urdf, root_node_name="/base_link")
     timing_handle = server.gui.add_text(
-        "1x IK Time (ms)", f"{ikstatus:08b}", disabled=True)
+        "1x IK Time (ms)", f"{ikstatus:08b}", disabled=True
+    )
     ik_target = server.scene.add_transform_controls(
         "/ik_target", scale=0.2, position=qt_tool0[4:], wxyz=qt_tool0[[3, 0, 1, 2]]
     )
@@ -116,13 +114,15 @@ def main_arm7():
         for ql in q_search:
             q8[:, -1] = ql
             ikstatus = arm.ik(tf_tool0, q8)
-            arm.fk_links(q8[whichik_handle.value], qtLink)
-            q3z = qtLink[3, -1]
-            # print(qtLink[3, -1])
-            if (q3z < q3z_best):
-                q3z_best = q3z
-                q_best = q8[whichik_handle.value].copy()
-                ikstatus_best = copy.copy(ikstatus)
+            if (ikstatus >> whichik_handle.value) & 1:
+                arm.fk_links(q8[whichik_handle.value], qtLink)
+                q3z = qtLink[3, -1]
+                # print(qtLink[3, -1])
+                if q3z < q3z_best:
+                    q3z_best = q3z
+                    q_best = q8[whichik_handle.value].copy()
+                    ikstatus_best = copy.copy(ikstatus)
+
         # print(q3z_best)
         qlast_handle.value = q_best[-1]
         solution = q_best
@@ -137,7 +137,6 @@ def main_arm7():
         elapsed_time = time.time() - start_time
         timing_handle.value = f"{ikstatus_best:08b}"
         # print(solution)
-
         urdf_vis.update_cfg(solution)
 
 
