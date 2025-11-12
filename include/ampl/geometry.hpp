@@ -2,7 +2,7 @@
 #define AMPL_GEOMETRY_HPP
 
 #include <Eigen/Core>
-#include <ampl/ampl_config.h>
+#include <ampl/common.hpp>
 #include <map>
 #include <vector>
 

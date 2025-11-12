@@ -83,6 +83,7 @@ Eigen::Matrix<REAL, 3, -1> trimesh_sampler_barycentricysplit( const REAL *vertic
     }
     sampling_length = 1.5 * std::sqrt( ( total_mesh_area / ( nb_p_expect * M_PI ) ) );
   }
+  printf_debug( "sampling_length = %f \n", sampling_length );
 
   std::list<VertexType> sample_positions;
   std::list<Index> sample_facet_ids;

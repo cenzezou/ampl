@@ -1,10 +1,10 @@
 #ifndef AMPL_UTILS_HPP
 #define AMPL_UTILS_HPP
 
-
 #include <ampl/ampl_config.h>
 #include <string>
 #include <vector>
+
 namespace ampl
 {
 void version();
@@ -22,7 +22,8 @@ void version();
 //                           REAL min_x, REAL min_y, REAL min_z, REAL d_vol, const REAL *sdf_grad = nullptr );
 
 // template <typename REAL>
-// bool read_distancefield( const std::string &file_path, std::vector<REAL> &sdf, uint32_t &ni, uint32_t &nj, uint32_t &nk,
+// bool read_distancefield( const std::string &file_path, std::vector<REAL> &sdf, uint32_t &ni, uint32_t &nj, uint32_t
+// &nk,
 //                          REAL &min_x, REAL &min_y, REAL &min_z, REAL &d_vol, std::vector<REAL> *sdf_grad = nullptr );
 
 }  // namespace ampl
