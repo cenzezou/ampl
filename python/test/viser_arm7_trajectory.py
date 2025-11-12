@@ -11,6 +11,7 @@ def main_arm7():
     """Main function for basic IK."""
     #ROBOT_TAG = "tianji_left"
     #path_urdf = f"/home/czhou/Data/mplib/tianji_right/urdf/tianji_right.urdf"
+    DIR_SCENE="/home/czhou/Data/mplib/test_scene/scenes/02/configs/01"
     ROBOT_TAG = "hillbot_left"
     path_urdf = f"/home/czhou/Data/mplib/hillbot_left/urdf/hillbot_left.urdf"
     urdf = yourdfpy.urdf.URDF.load(
@@ -49,32 +50,29 @@ def main_arm7():
         dtype=np.float64,
     )
 
-    q = np.array([0.0001] * dof, dtype=np.float64)  # a random pose to start
+    q = np.array([0.000001] * dof, dtype=np.float64)  # a random pose to start
     arm.set_base(tf_world_base)
-    if 0:
-        mesh = trimesh.load_mesh("/home/czhou/Data/A/surf_B/uv_clip_textured.obj")
-        mesh.vertex_normals
-        mesh.apply_scale(1e-3).apply_transform(
-            trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0], [0, 0, 0.5])
-        ).apply_translation([0, 0.7, 0.5])
-    which_ik = 1  # pick which ik from 8 analytic solutions
+    if 1:
+        mesh = trimesh.load_mesh(f"{DIR_SCENE}/scene.ply")
+        mesh.vertex_normals        
+    #which_ik = 1  # pick which ik from 8 analytic solutions
     arm.fk_links(q, qtLink)  # fk
     # get last of qLink which is tool0 (flann) frame (not link 6)
-    qt_tool0 = qtLink[-1]
-    tf_tool0 = ampl.qt7_to_tf44(qt_tool0)
+    #qt_tool0 = qtLink[-1]
+    #tf_tool0 = ampl.qt7_to_tf44(qt_tool0)
     # iks status is uint8 = 8 bit, each bit = 0 or 1 mean solution (in)valid
-    ikstatus = arm.ik(tf_tool0, q8)
-    solution = q8[which_ik]
+    #ikstatus = arm.ik(tf_tool0, q8)
+    #solution = q8[which_ik]
 
     # print(solution)
 
     server = viser.ViserServer()
     server.scene.add_grid("/ground", width=2, height=2)
-    whichik_handle = server.gui.add_slider("#IK", initial_value=5, min=0, max=7, step=1)
-    qlast_handle = server.gui.add_slider(
-        "q last", initial_value=0, disabled=False, min=-1.5, max=1.5, step=0.05
-    )
-    # server.scene.add_mesh_trimesh("secne", mesh)
+    # whichik_handle = server.gui.add_slider("#IK", initial_value=5, min=0, max=7, step=1)
+    # qlast_handle = server.gui.add_slider(
+    #     "q last", initial_value=0, disabled=False, min=-1.5, max=1.5, step=0.05
+    # )
+    server.scene.add_mesh_trimesh("secne", mesh)
     robot_base = server.scene.add_frame("/base_link", show_axes=False)
     urdf_vis = ViserUrdf(
         server,
@@ -82,15 +80,13 @@ def main_arm7():
         root_node_name="/base_link",
         # load_collision_meshes=True,
     )
-    timing_handle = server.gui.add_text(
-        "1x IK Time (ms)", f"{ikstatus:08b}", disabled=True
-    )
-    ik_target = server.scene.add_transform_controls(
-        "/ik_target", scale=0.2, position=qt_tool0[4:], wxyz=qt_tool0[[3, 0, 1, 2]]
-    )
-    tf_tool0 = ampl.wxyz_t_to_tf44(
-        np.array(ik_target.wxyz), np.array(ik_target.position)
-    )
+    
+    # ik_target = server.scene.add_transform_controls(
+    #     "/ik_target", scale=0.2, position=qt_tool0[4:], wxyz=qt_tool0[[3, 0, 1, 2]]
+    # )
+    # tf_tool0 = ampl.wxyz_t_to_tf44(
+    #     np.array(ik_target.wxyz), np.array(ik_target.position)
+    # )
 
     robot_base.position = tf_world_base[:3, 3]  # Move to (x=1, y=0, z=0.5).
     robot_base.wxyz = trimesh.transformations.quaternion_from_matrix(
@@ -108,34 +104,19 @@ def main_arm7():
         # client.scene.add_point_cloud(
         #     "A", V, C, point_size=5e-3)
 
-    q_search = np.linspace(-1.5, 1.5, num=50, endpoint=True)
-    q_best = q.copy()
-    ikstatus_best = ikstatus
-    import copy
+    # q_search = np.linspace(-1.5, 1.5, num=50, endpoint=True)
+    # q_best = q.copy()
+    # ikstatus_best = ikstatus
+    # import copy
 
+
+    trajectory=np.loadtxt(f"{DIR_SCENE}/trajectory.txt")
+
+    i_traj=0
+    flipped = False
     while True:
-
-        start_time = time.time()  # timer for solving IK.
-
-        tf_tool0 = ampl.wxyz_t_to_tf44(
-            np.array(ik_target.wxyz), np.array(ik_target.position)
-        )
-        q3z_best = 1000
-        for ql in q_search:
-            q8[:, -1] = ql
-            ikstatus = arm.ik(tf_tool0, q8)
-            if (ikstatus >> whichik_handle.value) & 1:
-                arm.fk_links(q8[whichik_handle.value], qtLink)
-                q3z = qtLink[3, -1]
-                # print(qtLink[3, -1])
-                if q3z < q3z_best:
-                    q3z_best = q3z
-                    q_best = q8[whichik_handle.value].copy()
-                    ikstatus_best = copy.copy(ikstatus)
-
-        # print(q3z_best)
-        qlast_handle.value = q_best[-1]
-        solution = q_best
+        #start_time = time.time()  # timer for solving IK.       
+        solution = trajectory[i_traj]
         # print(solution[1])
         # q8[:, -1] = qlast_handle.value
         # ikstatus = arm.ik(tf_tool0, q8)
@@ -144,10 +125,21 @@ def main_arm7():
         # arm.fk_links(solution, qtLink)
         # print(qtLink[3, -1])
 
-        elapsed_time = time.time() - start_time
-        timing_handle.value = f"{ikstatus_best:08b}"
+        #elapsed_time = time.time() - start_time
+        #timing_handle.value = f"{ikstatus_best:08b}"
         # print(solution)
         urdf_vis.update_cfg(solution)
+        i_traj+=1
+
+        if i_traj % len(trajectory) == 0:
+            flipped = not flipped
+            i_traj=0
+            trajectory=np.loadtxt(f"{DIR_SCENE}/trajectory.txt")
+            if flipped:
+                  trajectory = np.flip(trajectory, axis=0)
+            trajectory = np.vstack((np.array([trajectory[1].tolist()] * 5),trajectory, np.array([trajectory[-1].tolist()] * 5)))
+        time.sleep(0.01)
+
 
 
 if __name__ == "__main__":

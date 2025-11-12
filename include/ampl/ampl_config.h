@@ -3,9 +3,9 @@
 
 #define LIBAMPL_SHARED
 
-#define AMPL_VERSION 0.0.2
+#define AMPL_VERSION 0.0.3
 #define AMPL_VERSION_MAJOR 0
 #define AMPL_VERSION_MINOR 0
-#define AMPL_VERSION_PATCH 2
+#define AMPL_VERSION_PATCH 3
 
 #endif

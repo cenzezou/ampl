@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p package
-./buid.sh
+./build.sh
 cd build
 sudo cpack -G DEB
 cd ..

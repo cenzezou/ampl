@@ -8,7 +8,33 @@
 
 namespace ampl
 {
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ DISTANCE FIELD                                                          │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
 
+template <typename REAL, typename UINT>
+void distancefield_xyz2occ( const REAL *X, const REAL *Y, const REAL *Z, uint32_t num_xyz, UINT *occ, uint32_t ni,
+                            uint32_t nj, uint32_t nk, REAL min_x, REAL min_y, REAL min_z, REAL d_vol );
+template <typename REAL, typename UINT>
+void distancefield_xyz2occ( const REAL *XYZ, uint32_t num_xyz, UINT *occ, uint32_t ni, uint32_t nj, uint32_t nk,
+                            REAL min_x, REAL min_y, REAL min_z, REAL d_vol );
+
+template <typename REAL, typename UINT>
+void distancefield_occ2edf( const UINT *occ, REAL *edf, uint32_t ni, uint32_t nj, uint32_t nk, REAL d_vol,
+                            uint32_t nb_worker = 4 );
+
+template <typename REAL>
+void distancefield_edf2trimesh( const REAL *df, REAL df_offset, uint32_t ni, uint32_t nj, uint32_t nk, REAL min_x,
+                                REAL min_y, REAL min_z, REAL d_vol, Eigen::Matrix3X<REAL> &vertices,
+                                Eigen::Matrix3X<uint32_t> &faces );
+
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ TRIMESH                                                                 │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
 void trimesh_vhacd( const double *vertices, uint32_t num_vertices, const uint32_t *facets, uint32_t num_facets,
                     std::vector<std::vector<double>> &vertices_ch, std::vector<std::vector<uint32_t>> &faces_ch,
                     uint32_t maxConvexHulls, uint32_t resolution, double minimumVolumePercentErrorAllowed,
@@ -20,12 +46,23 @@ Eigen::Matrix<REAL, 3, -1> trimesh_sampler_barycentricysplit( const REAL *vertic
                                                               const uint32_t *facets, uint32_t nb_f,
                                                               const uint32_t &nb_p_expect,
                                                               const REAL &sampling_length_manual );
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ PRIMATIVE                                                               │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
 
 template <typename REAL>
 bool intersect_line3( const REAL *os, const REAL *ns, uint32_t nb_line, REAL *p );
 
 template <typename REAL>
 bool intersect_plane3( const REAL *o0, const REAL *n0, const REAL *o1, const REAL *n1, REAL *o, REAL *t );
+
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ TRANSFORM                                                               │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
 
 template <typename REAL>
 void convert_qt_to_tf( const REAL *qt7, REAL *tf44, bool colmajor = true, bool q_then_t = true );
@@ -49,7 +86,6 @@ template <typename REAL>
 void SE3_Adj( const Eigen::Matrix4<REAL> &SE3, Eigen::Matrix<REAL, 6, 6> &A );
 template <typename REAL>
 void SE3_inv( const Eigen::Matrix4<REAL> &SE3, Eigen::Matrix4<REAL> &inv );
-
 template <typename REAL>
 void transform_xyz( const REAL *rw, const REAL *t, const REAL *xyz, uint32_t nb_xyz, REAL *xyz_dst );
 

@@ -13,9 +13,6 @@ __all__ = [
     "read_polylines",
     "transform_xyz",
 ]
-# from . import _core
-# from . import _utils
-
 
 from ._core import version as version
 from ._core import ArmBase as ArmBase
@@ -33,6 +30,12 @@ from ._core import trimesh_vhacd as trimesh_vhacd
 from ._core import (
     trimesh_sampler_barycentricysplit as trimesh_sampler_barycentricysplit,
 )
+
+
+from ._core import distancefield_xyz2occ as distancefield_xyz2occ
+from ._core import distancefield_occ2edf as distancefield_occ2edf
+from ._core import distancefield_xyz2edf as distancefield_xyz2edf
+from ._core import distancefield_df2trimesh as distancefield_df2trimesh
 
 from ._core import transform_xyz as transform_xyz
 from ._core import tf44_to_qt7 as tf44_to_qt7

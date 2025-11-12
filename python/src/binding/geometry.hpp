@@ -89,7 +89,114 @@ inline void init_geometry( nanobind::module_ &pymodule )
             ampl::convertf_qt_to_tf( qt7, tf.data(), false, true );
             return tf;
           },
-          "wxyz"_a, "t"_a, "return tf44" );
+          "wxyz"_a, "t"_a, "return tf44" )
+      .def(
+          "distancefield_xyz2occ",
+          []( const nb::ndarray<float, nb::shape<-1, 3>, nb::device::cpu, nb::c_contig> &xyz,  // NOAQ
+              nb::ndarray<unsigned char> &occ,                                                 // NOAQ
+              const nb::ndarray<uint32_t> &shape,                                              // NOAQ
+              const nb::ndarray<float> &origin,                                                // NOAQ
+              float dx                                                                         // NOAQ
+          )
+          {
+            ampl::distancefield_xyz2occ( xyz.data(), xyz.shape( 0 ), occ.data(), shape.data()[ 0 ], shape.data()[ 1 ],
+                                         shape.data()[ 2 ], origin.data()[ 0 ], origin.data()[ 1 ], origin.data()[ 2 ],
+                                         dx );
+            return;
+          },
+          "xyz"_a,     // NOAQ
+          "occ"_a,     // NOAQ,
+          "shape"_a,   // NOAQ
+          "origin"_a,  // NOAQ
+          "dx"_a,      // NOAQ
+          "This function computes an occupation grid from a point cloud" )
+      .def(
+          "distancefield_occ2edf",
+          []( const nb::ndarray<unsigned char, nb::shape<-1, 3>, nb::device::cpu, nb::c_contig> &occ,  // NOAQ
+              nb::ndarray<float> &edf,                                                                 // NOAQ
+              const nb::ndarray<uint32_t> &shape,                                                      // NOAQ
+              const nb::ndarray<float> &origin,                                                        // NOAQ
+              float dx,                                                                                // NOAQ
+              uint32_t nb_worker                                                                       // NOAQ
+          )
+          {
+            ampl::distancefield_occ2edf( occ.data(), edf.data(), shape.data()[ 0 ], shape.data()[ 1 ],
+                                         shape.data()[ 2 ], dx, nb_worker );
+            return;
+          },
+          "occ"_a,            // NOAQ
+          "edf"_a,            // NOAQ,
+          "shape"_a,          // NOAQ
+          "origin"_a,         // NOAQ
+          "dx"_a,             // NOAQ
+          "nb_worker"_a = 4,  // NOAQ
+          "This function computes an euclidean distance field from a occupation grid" )
+      .def(
+          "distancefield_xyz2edf",
+          []( const nb::ndarray<float, nb::shape<-1, 3>, nb::device::cpu, nb::c_contig> &xyz,  // NOAQ
+              nb::ndarray<unsigned char> &occ,                                                 // NOAQ
+              nb::ndarray<float> &edf,                                                         // NOAQ
+              const nb::ndarray<uint32_t> &shape,                                              // NOAQ
+              const nb::ndarray<float> &origin,                                                // NOAQ
+              float dx,                                                                        // NOAQ
+              uint32_t nb_worker                                                               // NOAQ
+          )
+          {
+            ampl::distancefield_xyz2occ( xyz.data(), xyz.shape( 0 ), occ.data(), shape.data()[ 0 ], shape.data()[ 1 ],
+                                         shape.data()[ 2 ], origin.data()[ 0 ], origin.data()[ 1 ], origin.data()[ 2 ],
+                                         dx );
+
+            ampl::distancefield_occ2edf( occ.data(), edf.data(), shape.data()[ 0 ], shape.data()[ 1 ],
+                                         shape.data()[ 2 ], dx, nb_worker );
+            return;
+          },
+          "xyz"_a,            // NOAQ
+          "occ"_a,            // NOAQ,
+          "edf"_a,            // NOAQ,
+          "shape"_a,          // NOAQ
+          "origin"_a,         // NOAQ
+          "dx"_a,             // NOAQ
+          "nb_worker"_a = 4,  // NOAQ
+          "This function computes an euclidean distance field from a point cloud" )
+      .def(
+          "distancefield_df2trimesh",
+          []( const nb::ndarray<float> &df,        // NOAQ
+              float df_offset,                     // NOAQ
+              const nb::ndarray<uint32_t> &shape,  // NOAQ
+              const nb::ndarray<float> &origin,    // NOAQ
+              float dx                             // NOAQ
+          )
+          {
+            Eigen::Matrix3Xf V;
+            Eigen::Matrix<uint32_t, 3, Eigen::Dynamic> F;
+            ampl::distancefield_edf2trimesh<float>( df.data(), df_offset,                                        // NOAQ
+                                                    shape.data()[ 0 ], shape.data()[ 1 ], shape.data()[ 2 ],     // NOAQ
+                                                    origin.data()[ 0 ], origin.data()[ 1 ], origin.data()[ 2 ],  // NOAQ
+                                                    dx, V, F );
+
+            const uint32_t sizeV = V.cols() * 3;
+            float *dataV         = new float[ sizeV ];
+            memcpy( dataV, V.data(), sizeof( float ) * sizeV );
+            nb::capsule ownerV( dataV, []( void *p ) noexcept { delete[]( float * ) p; } );
+            const uint32_t sizeF = F.cols() * 3;
+            uint32_t *dataF      = new uint32_t[ sizeF ];
+            memcpy( dataF, F.data(), sizeof( uint32_t ) * sizeF );
+            nb::capsule ownerF( dataF, []( void *p ) noexcept { delete[]( uint32_t * ) p; } );
+
+            return std::tuple<nb::ndarray<nb::numpy, float>, nb::ndarray<nb::numpy, uint32_t>>(
+                nb::ndarray<nb::numpy, float>( dataV, { sizeV / 3, 3 }, ownerV ),
+                nb::ndarray<nb::numpy, uint32_t>( dataF, { sizeF / 3, 3 }, ownerF ) );
+          },
+
+          "df"_a,        // NOAQ,
+          "mc_level"_a,  // NOAQ,
+          "shape"_a,     // NOAQ
+          "origin"_a,    // NOAQ
+          "dx"_a,        // NOAQ
+          "This function performs marching cube on a distance field under a "
+          "given level." )
+
+      ;
 
   ;
 }

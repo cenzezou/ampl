@@ -59,6 +59,22 @@ def wxyz_t_to_tf44(wxyz: Annotated[NDArray[numpy.float64], dict(shape=(None,))],
 @overload
 def wxyz_t_to_tf44(wxyz: Annotated[NDArray[numpy.float32], dict(shape=(None,))], t: Annotated[NDArray[numpy.float32], dict(shape=(None,))]) -> Annotated[NDArray[numpy.float32], dict(shape=(4, 4), order='C')]: ...
 
+def distancefield_xyz2occ(xyz: Annotated[NDArray[numpy.float32], dict(shape=(None, 3), order='C', device='cpu')], occ: NDArray[numpy.uint8], shape: NDArray[numpy.uint32], origin: NDArray[numpy.float32], dx: float) -> None:
+    """This function computes an occupation grid from a point cloud"""
+
+def distancefield_occ2edf(occ: Annotated[NDArray[numpy.uint8], dict(shape=(None, 3), order='C', device='cpu')], edf: NDArray[numpy.float32], shape: NDArray[numpy.uint32], origin: NDArray[numpy.float32], dx: float, nb_worker: int = 4) -> None:
+    """
+    This function computes an euclidean distance field from a occupation grid
+    """
+
+def distancefield_xyz2edf(xyz: Annotated[NDArray[numpy.float32], dict(shape=(None, 3), order='C', device='cpu')], occ: NDArray[numpy.uint8], edf: NDArray[numpy.float32], shape: NDArray[numpy.uint32], origin: NDArray[numpy.float32], dx: float, nb_worker: int = 4) -> None:
+    """This function computes an euclidean distance field from a point cloud"""
+
+def distancefield_df2trimesh(df: NDArray[numpy.float32], mc_level: float, shape: NDArray[numpy.uint32], origin: NDArray[numpy.float32], dx: float) -> tuple[NDArray[numpy.float32], NDArray[numpy.uint32]]:
+    """
+    This function performs marching cube on a distance field under a given level.
+    """
+
 def get_stl_data(arg: str, /) -> tuple: ...
 
 def trimesh_vhacd(vertices: Annotated[NDArray[numpy.float64], dict(shape=(None, 3), device='cpu')], indices: Annotated[NDArray[numpy.uint32], dict(shape=(None, 3), device='cpu')], maxConvexHulls: int = 64, resolution: int = 400000, minimumVolumePercentErrorAllowed: float = 1.0, maxRecursionDepth: int = 10, shrinkWrap: bool = True, fillMode: str = 'flood', maxNumVerticesPerCH: int = 64, asyncACD: bool = True, minEdgeLength: int = 2, findBestPlane: bool = False) -> object:

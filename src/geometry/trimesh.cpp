@@ -2,9 +2,10 @@
 #include <Eigen/Dense>
 #include <ampl/geometry.hpp>
 #include <math.h>
-
+#include <vector>
 #define ENABLE_VHACD_IMPLEMENTATION 1
 #include "vhacd.h"
+#include "magic.hpp"
 namespace ampl
 {
 
@@ -16,6 +17,14 @@ template Eigen::Matrix<double, 3, -1> trimesh_sampler_barycentricysplit<double>(
                                                                                  const uint32_t *facets, uint32_t nb_f,
                                                                                  const uint32_t &nb_p_expect,
                                                                                  const double &sampling_length_manual );
+
+template void distancefield_edf2trimesh<float>( const float *df, float df_offset, uint32_t ni, uint32_t nj, uint32_t nk,
+                                                float min_x, float min_y, float min_z, float d_vol,
+                                                Eigen::Matrix3X<float> &vertices, Eigen::Matrix3X<uint32_t> &faces );
+
+template void distancefield_edf2trimesh<double>( const double *df, double df_offset, uint32_t ni, uint32_t nj,
+                                                 uint32_t nk, double min_x, double min_y, double min_z, double d_vol,
+                                                 Eigen::Matrix3X<double> &vertices, Eigen::Matrix3X<uint32_t> &faces );
 
 template <typename REAL>
 Eigen::Matrix<REAL, 3, -1> trimesh_sampler_barycentricysplit( const REAL *vertices, uint32_t nb_v,
@@ -332,5 +341,30 @@ void trimesh_vhacd( const double *vertices, uint32_t num_vertices, const uint32_
   return;
 };
 #undef ENABLE_VHACD_IMPLEMENTATION
+
+template <typename REAL>
+void distancefield_edf2trimesh( const REAL *df, REAL df_offset, uint32_t ni, uint32_t nj, uint32_t nk, REAL min_x,
+                                REAL min_y, REAL min_z, REAL d_vol, Eigen::Matrix3X<REAL> &vertices,
+                                Eigen::Matrix3X<uint32_t> &faces )
+{
+  std::vector<marching_cube::mc_vec3r> vs_mc;
+  std::vector<marching_cube::mc_vec3ui> fs_mc;
+
+  marching_cube::marching_cube<REAL>( df, df_offset, ni, nj, nk, vs_mc, fs_mc );
+
+  vertices.resize( 3, vs_mc.size() );
+  faces.resize( 3, fs_mc.size() );
+
+  for ( Eigen::Index i = 0; i < faces.cols(); i++ )
+  {
+    faces.col( i ) = fs_mc[ i ].cast<uint32_t>();
+  }
+  for ( Eigen::Index i = 0; i < vertices.cols(); i++ )
+  {
+    vertices.col( i ) = vs_mc[ i ].cast<REAL>();
+  }
+  vertices *= d_vol;
+  vertices.colwise() += Eigen::Vector3<REAL>( min_x, min_y, min_z );
+};
 
 }  // namespace ampl
