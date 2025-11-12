@@ -1,6 +1,7 @@
 """
 AMPL = Another Motion Planning Library
 """
+
 __all__ = [
     "version",
     "ArmBase",
@@ -10,9 +11,7 @@ __all__ = [
     "read_pointcloud",
     "write_polylines",
     "read_polylines",
-
-    "transform_xyz"
-
+    "transform_xyz",
 ]
 # from . import _core
 # from . import _utils
@@ -29,7 +28,11 @@ from ._utils.io import write_pointcloud as write_pointcloud
 from ._utils.io import read_pointcloud as read_pointcloud
 from ._utils.io import write_polylines as write_polylines
 from ._utils.io import read_polylines as read_polylines
+from ._core import trimesh_vhacd as trimesh_vhacd
 
+from ._core import (
+    trimesh_sampler_barycentricysplit as trimesh_sampler_barycentricysplit,
+)
 
 from ._core import transform_xyz as transform_xyz
 from ._core import tf44_to_qt7 as tf44_to_qt7

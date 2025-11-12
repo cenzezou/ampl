@@ -60,3 +60,11 @@ def wxyz_t_to_tf44(wxyz: Annotated[NDArray[numpy.float64], dict(shape=(None,))],
 def wxyz_t_to_tf44(wxyz: Annotated[NDArray[numpy.float32], dict(shape=(None,))], t: Annotated[NDArray[numpy.float32], dict(shape=(None,))]) -> Annotated[NDArray[numpy.float32], dict(shape=(4, 4), order='C')]: ...
 
 def get_stl_data(arg: str, /) -> tuple: ...
+
+def trimesh_vhacd(vertices: Annotated[NDArray[numpy.float64], dict(shape=(None, 3), device='cpu')], indices: Annotated[NDArray[numpy.uint32], dict(shape=(None, 3), device='cpu')], maxConvexHulls: int = 64, resolution: int = 400000, minimumVolumePercentErrorAllowed: float = 1.0, maxRecursionDepth: int = 10, shrinkWrap: bool = True, fillMode: str = 'flood', maxNumVerticesPerCH: int = 64, asyncACD: bool = True, minEdgeLength: int = 2, findBestPlane: bool = False) -> object:
+    """This function wraps around vhacd."""
+
+def trimesh_sampler_barycentricysplit(vertices: Annotated[NDArray[numpy.float32], dict(shape=(None, 3), device='cpu')], indices: Annotated[NDArray[numpy.uint32], dict(shape=(None, 3), device='cpu')], nb_samples_expect: int, sample_distance_expect: float) -> Annotated[NDArray[numpy.float32], dict(shape=(None, None))]:
+    """
+    This function samples pointcloud from a mesh by barycentric face-splitting.
+    """

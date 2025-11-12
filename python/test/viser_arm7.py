@@ -9,11 +9,16 @@ import trimesh
 
 def main_arm7():
     """Main function for basic IK."""
-    # ROBOT_TAG = "tianji_left"
-    # path_urdf = f"/home/czhou/Data/mplib/tianji/urdf/urdf.urdf"
-    ROBOT_TAG = "hillbot_left"
-    path_urdf = f"/home/czhou/Data/mplib/SoledadAssets-main/hillbot_beta1.0_v2/hillbot_left-link_arm.urdf"
-    urdf = yourdfpy.urdf.URDF.load(path_urdf)
+    ROBOT_TAG = "tianji_left"
+    path_urdf = f"/home/czhou/Data/mplib/tianji_right/urdf/tianji_right.urdf"
+    # ROBOT_TAG = "hillbot_left"
+    # path_urdf = f"/home/czhou/Data/mplib/hillbot_left/urdf/hillbot_left.urdf"
+    urdf = yourdfpy.urdf.URDF.load(
+        path_urdf,
+        # load_collision_meshes=True,
+        # load_meshes=False,
+        # build_collision_scene_graph=True,
+    )
     dof = 7
     arm = ampl.ArmBase(ROBOT_TAG, ampl.ArmType.Humanoid7, dof)
     q8 = np.zeros((8, dof), dtype=np.float64)  # 8 analytic ik solutions
@@ -65,13 +70,18 @@ def main_arm7():
 
     server = viser.ViserServer()
     server.scene.add_grid("/ground", width=2, height=2)
-    whichik_handle = server.gui.add_slider("#IK", initial_value=1, min=0, max=7, step=1)
+    whichik_handle = server.gui.add_slider("#IK", initial_value=5, min=0, max=7, step=1)
     qlast_handle = server.gui.add_slider(
-        "q last", initial_value=5, disabled=False, min=-1.5, max=1.5, step=0.05
+        "q last", initial_value=0, disabled=False, min=-1.5, max=1.5, step=0.05
     )
     # server.scene.add_mesh_trimesh("secne", mesh)
     robot_base = server.scene.add_frame("/base_link", show_axes=False)
-    urdf_vis = ViserUrdf(server, urdf, root_node_name="/base_link")
+    urdf_vis = ViserUrdf(
+        server,
+        urdf,
+        root_node_name="/base_link",
+        # load_collision_meshes=True,
+    )
     timing_handle = server.gui.add_text(
         "1x IK Time (ms)", f"{ikstatus:08b}", disabled=True
     )
