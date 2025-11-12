@@ -33,3 +33,8 @@ python3 -m build
 See `python/dist/` for `.whl` file
 
 
+### One for All
+
+```bash
+./package.sh
+```
