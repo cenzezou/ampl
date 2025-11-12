@@ -46,6 +46,9 @@ Eigen::Matrix<REAL, 3, -1> trimesh_sampler_barycentricysplit( const REAL *vertic
                                                               const uint32_t *facets, uint32_t nb_f,
                                                               const uint32_t &nb_p_expect,
                                                               const REAL &sampling_length_manual );
+template <typename REAL>
+bool trimesh_convexhull( const double *xyz, uint32_t nb_xyz, Eigen::Matrix3X<REAL> &vertices,
+                         Eigen::Matrix3X<uint32_t> &faces, const double epsilon );
 /*
   ┌─────────────────────────────────────────────────────────────────────────┐
   │ PRIMATIVE                                                               │
@@ -89,6 +92,11 @@ void SE3_inv( const Eigen::Matrix4<REAL> &SE3, Eigen::Matrix4<REAL> &inv );
 template <typename REAL>
 void transform_xyz( const REAL *rw, const REAL *t, const REAL *xyz, uint32_t nb_xyz, REAL *xyz_dst );
 
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ SOME EXPLICIT TEMPLATE INITIALIZATION                                   │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
 auto constexpr intersectd_line3  = &intersect_line3<double>;
 auto constexpr intersectf_line3  = &intersect_line3<float>;
 auto constexpr intersectd_plane3 = &intersect_plane3<double>;

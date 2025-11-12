@@ -6,8 +6,15 @@
 #define ENABLE_VHACD_IMPLEMENTATION 1
 #include "vhacd.h"
 #include "magic.hpp"
+#include "quickhull.hpp"
 namespace ampl
 {
+
+template bool trimesh_convexhull<float>( const double *xyz, uint32_t nb_xyz, Eigen::Matrix3X<float> &vertices,
+                                         Eigen::Matrix3X<uint32_t> &faces, const double epsilon );
+
+template bool trimesh_convexhull<double>( const double *xyz, uint32_t nb_xyz, Eigen::Matrix3X<double> &vertices,
+                                          Eigen::Matrix3X<uint32_t> &faces, const double epsilon );
 
 template Eigen::Matrix<float, 3, -1> trimesh_sampler_barycentricysplit<float>( const float *vertices, uint32_t nb_v,
                                                                                const uint32_t *facets, uint32_t nb_f,
@@ -366,6 +373,30 @@ void distancefield_edf2trimesh( const REAL *df, REAL df_offset, uint32_t ni, uin
   }
   vertices *= d_vol;
   vertices.colwise() += Eigen::Vector3<REAL>( min_x, min_y, min_z );
+};
+
+template <typename REAL>
+bool trimesh_convexhull( const double *xyz, uint32_t nb_xyz, Eigen::Matrix3X<REAL> &vertices,
+                         Eigen::Matrix3X<uint32_t> &faces, const double epsilon )
+{
+  quickhull::QuickHull<double> qh;
+  const double qhullEps = std::min( epsilon, quickhull::defaultEps<double>() );
+  auto hull             = qh.getConvexHull( xyz, nb_xyz, false, false, qhullEps );
+  auto ids              = hull.getIndexBuffer();
+  auto vxs              = hull.getVertexBuffer();
+
+  if ( ids.empty() ) return false;
+
+  faces.resize( 3, ids.size() / 3 );
+  vertices.resize( 3, vxs.size() );
+
+  for ( auto i = 0; i < faces.size(); i++ ) faces.col( i ) << ids[ 3 * i + 0 ], ids[ 3 * i + 1 ], ids[ 3 * i + 2 ];
+
+  for ( auto i = 0; i < vertices.size(); i++ ) vertices.col( i ) << vxs[ i ].x, vxs[ i ].y, vxs[ i ].z;
+  printf_debug( "(v,f) = (%lu,%lu)\n", vertices.size(), faces.size() );
+  // if (hull.)
+  // std::cout << hull.getIndexBuffer().size() << std::endl;
+  return true;
 };
 
 }  // namespace ampl
