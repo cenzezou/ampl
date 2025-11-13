@@ -87,7 +87,7 @@ add_subdirectory(src)
 
 
 
-set(AMPL_LIBRARIES ampl-utils ampl-geometry ampl-kinematics)
+set(AMPL_LIBRARIES ampl-utils ampl-geometry ampl-kinematics ampl-collision)
 
 
 if (BUILD_ONE_LIB)

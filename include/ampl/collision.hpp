@@ -7,22 +7,25 @@ namespace ampl
 {
 namespace soa
 {
-template <typename REAL, int MAX_SPHERE_SIZE, int MAX_OFFSET_SIZE>
-struct alignas( 16 ) SphereGroup
+template <int MAX_SPHERE_SIZE, int MAX_OFFSET_SIZE>
+struct SphereGroupf
 {
-  alignas( 16 ) REAL x[ MAX_SPHERE_SIZE ];
-  alignas( 16 ) REAL y[ MAX_SPHERE_SIZE ];
-  alignas( 16 ) REAL z[ MAX_SPHERE_SIZE ];
-  alignas( 16 ) REAL r[ MAX_SPHERE_SIZE ];
+  float x[ MAX_SPHERE_SIZE ];
+  float y[ MAX_SPHERE_SIZE ];
+  float z[ MAX_SPHERE_SIZE ];
+  float r[ MAX_SPHERE_SIZE ];
   uint32_t offset[ MAX_OFFSET_SIZE ];
   uint32_t num_offset                     = 0;
   constexpr static uint32_t nb_max_sph    = MAX_SPHERE_SIZE;
   constexpr static uint32_t nb_max_offset = MAX_OFFSET_SIZE;
+  SphereGroupf(){};
 };
 
-using VSphG256f  = SphereGroup<float, 256, 8>;
-using VSphG512f  = SphereGroup<float, 512, 8>;
-using VSphG1024f = SphereGroup<float, 1024, 8>;
+template <typename VSphGf>
+void collision_initialize_object( VSphGf &, const float *xyzr, uint32_t nb_sph, const uint32_t *offset,
+                                  uint32_t nb_offset );
+
+typedef SphereGroupf<512, 8> VSphG512f;
 
 }  // namespace soa
 }  // namespace ampl

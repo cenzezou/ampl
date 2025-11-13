@@ -9,6 +9,7 @@
 namespace ampl
 {
 void version();
+
 // inline auto get_elapsed_ns( const std::chrono::time_point<std::chrono::steady_clock> &start ) -> std::size_t
 // {
 //   return std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::steady_clock::now() - start ).count();
