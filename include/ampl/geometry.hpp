@@ -123,6 +123,12 @@ auto constexpr convertf_tf_to_qt = &convert_tf_to_qt<float>;
 auto constexpr so3d_up = &so3_up<double>;
 auto constexpr so3f_up = &so3_up<float>;
 
+/*
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ SPATIAL ACCELERATION STRUCTURE                                          │
+  └─────────────────────────────────────────────────────────────────────────┘
+ */
+
 class OcTreed
 {
  public:
