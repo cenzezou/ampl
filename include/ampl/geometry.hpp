@@ -5,6 +5,7 @@
 #include <ampl/common.hpp>
 #include <map>
 #include <vector>
+#include <memory>
 
 namespace ampl
 {
@@ -61,6 +62,19 @@ bool intersect_line3( const REAL *os, const REAL *ns, uint32_t nb_line, REAL *p 
 template <typename REAL>
 bool intersect_plane3( const REAL *o0, const REAL *n0, const REAL *o1, const REAL *n1, REAL *o, REAL *t );
 
+template <typename REAL>
+REAL distance_ray3_tri3( const REAL *o, const REAL *r, const REAL *p0, const REAL *p1, const REAL *p2,
+                         const REAL &nearest );
+
+template <typename REAL>
+void bounding_aabb_tri3( const REAL *v0, const REAL *v1, const REAL *v2, REAL *vmin, REAL *vmax, REAL epsilon = 1e-5 );
+
+template <typename FT>
+FT distance_point3_segment3( const FT *p, const FT *v0, const FT *v1, FT *v_closest, int dim );
+
+template <typename FT>
+FT distance_point3_segment3( const FT *p, const FT *v0, const FT *v1, FT *v_closest, int dim, FT *v_lambda );
+
 /*
   ┌─────────────────────────────────────────────────────────────────────────┐
   │ TRANSFORM                                                               │
@@ -108,6 +122,42 @@ auto constexpr convertf_tf_to_qt = &convert_tf_to_qt<float>;
 
 auto constexpr so3d_up = &so3_up<double>;
 auto constexpr so3f_up = &so3_up<float>;
+
+class OcTreed
+{
+ public:
+  enum EntityType
+  {
+    Ver = 1,
+    Edg,
+    Tri
+  };
+  static std::shared_ptr<OcTreed> create( int num_vertices, const double *vertices, int num_facets, const int *facets,
+                                          int num_edges, const int *edges, int num_thread = 1 );
+  virtual int intersect_aabb( EntityType type, double *min_box, double *max_box, int *idx_intersect,
+                              int max_num_intersect = 64 ) const            = 0;
+  virtual int nearest_neighbour( EntityType type, double *position_query, double *distance_closest, double max_dist = 0,
+                                 int id_thread = 0 ) const                  = 0;
+  virtual int intersect_ray( const double *position_query, const double *direction_unit_query, double *distance_closest,
+                             double max_dist = 0, int id_thread = 0 ) const = 0;
+  virtual ~OcTreed()                                                        = default;
+};
+
+// class BVHd
+// {
+//  public:
+//   static std::shared_ptr<BVHd> create( const double *vertices, int num_vertices, const int *facets, int num_facets );
+
+//   virtual double intersect_ray( const std::array<double, 3> &o, const std::array<double, 3> &d, double near ) = 0;
+//   // virtual double IntersectRay( const std::array<double, 3> &o, const std::array<double, 3> &d, double near,
+//   //                              int *facet )                                                                  = 0;
+
+//   // virtual double IntersectRay( const std::array<double, 3> &o, const std::array<double, 3> &d, double near, int
+//   // *facet,
+//   //                              double *facet_normal ) = 0;
+//   // virtual std::vector<int> NearestNeighbour( const Eigen::Vector3d &p, double radius ) = 0;
+//   virtual ~BVHd() = default;
+// };
 }  // namespace ampl
 
 #endif

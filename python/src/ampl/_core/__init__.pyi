@@ -84,3 +84,8 @@ def trimesh_sampler_barycentricysplit(vertices: Annotated[NDArray[numpy.float32]
     """
     This function samples pointcloud from a mesh by barycentric face-splitting.
     """
+
+def trimesh_raycast(vertices: Annotated[NDArray[numpy.float64], dict(shape=(None, 3), device='cpu')], indices: Annotated[NDArray[numpy.uint32], dict(shape=(None, 3), device='cpu')], origins_ray: Annotated[NDArray[numpy.float64], dict(shape=(None, 3), device='cpu')], directions_ray: Annotated[NDArray[numpy.float64], dict(shape=(None, 3), device='cpu')], ret_hit_indice: bool = False, nb_worker: int = 1) -> tuple[NDArray[numpy.float64], NDArray[numpy.uint32]]:
+    """
+    This function performs distance queries of a point cloud against a distance field
+    """

@@ -26,7 +26,7 @@ from ._utils.io import read_pointcloud as read_pointcloud
 from ._utils.io import write_polylines as write_polylines
 from ._utils.io import read_polylines as read_polylines
 from ._core import trimesh_vhacd as trimesh_vhacd
-
+from ._core import trimesh_raycast as trimesh_raycast
 from ._core import (
     trimesh_sampler_barycentricysplit as trimesh_sampler_barycentricysplit,
 )
