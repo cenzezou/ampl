@@ -10,7 +10,7 @@
 #endif
 
 #include <ampl/ampl_config.h>
-
+#include <cstdint>
 #if AMPL_DEBUG == 1
 #include <stdio.h>
 #define FIRST_ARG( arg1, ... )       arg1

@@ -1,6 +1,7 @@
 #ifndef AMPL_KINEMATICS_HPP
 #define AMPL_KINEMATICS_HPP
 
+#include <ampl/common.hpp>
 #include <memory>
 #include <string>
 
@@ -52,8 +53,9 @@ class ArmBase
    * @brief Tool0 = flann which is fixed for all robot arms
    * @param xyzrpy
    */
-  virtual void set_link_end_tool0( const double *xyzrpy )           = 0;
-  virtual void set_tcp( const double *tf44, bool colmajor = true )  = 0;
+  virtual void set_link_end_tool0( const double *xyzrpy )          = 0;
+  virtual void set_tcp( const double *tf44, bool colmajor = true ) = 0;
+  // TODO
   virtual void get_pose_tool0( double *tf44, bool colmajor = true ) = 0;
 
   virtual void set_base( const double *tf44, bool colmajor = true ) = 0;

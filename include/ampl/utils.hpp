@@ -2,6 +2,7 @@
 #define AMPL_UTILS_HPP
 
 #include <ampl/ampl_config.h>
+#include <ampl/common.hpp>
 #include <string>
 #include <vector>
 

@@ -9,10 +9,10 @@ import trimesh
 
 def main_arm7():
     """Main function for basic IK."""
-    #ROBOT_TAG = "tianji_left"
-    #path_urdf = f"/home/czhou/Data/mplib/tianji_right/urdf/tianji_right.urdf"
-    ROBOT_TAG = "hillbot_left"
-    path_urdf = f"/home/czhou/Data/mplib/hillbot_left/urdf/hillbot_left.urdf"
+    ROBOT_TAG = "tianji_left"
+    path_urdf = f"/home/czhou/Data/mplib/tianji_right/urdf/tianji_right.urdf"
+    #ROBOT_TAG = "hillbot_left"
+    #path_urdf = f"/home/czhou/Data/mplib/hillbot_left/urdf/hillbot_left.urdf"
     urdf = yourdfpy.urdf.URDF.load(
         path_urdf,
         # load_collision_meshes=True,
@@ -120,26 +120,26 @@ def main_arm7():
         tf_tool0 = ampl.wxyz_t_to_tf44(
             np.array(ik_target.wxyz), np.array(ik_target.position)
         )
-        q3z_best = 1000
-        for ql in q_search:
-            q8[:, -1] = ql
-            ikstatus = arm.ik(tf_tool0, q8)
-            if (ikstatus >> whichik_handle.value) & 1:
-                arm.fk_links(q8[whichik_handle.value], qtLink)
-                q3z = qtLink[3, -1]
-                # print(qtLink[3, -1])
-                if q3z < q3z_best:
-                    q3z_best = q3z
-                    q_best = q8[whichik_handle.value].copy()
-                    ikstatus_best = copy.copy(ikstatus)
+        # q3z_best = 1000
+        # for ql in q_search:
+        #     q8[:, -1] = ql
+        #     ikstatus = arm.ik(tf_tool0, q8)
+        #     if (ikstatus >> whichik_handle.value) & 1:
+        #         arm.fk_links(q8[whichik_handle.value], qtLink)
+        #         q3z = qtLink[3, -1]
+        #         # print(qtLink[3, -1])
+        #         if q3z < q3z_best:
+        #             q3z_best = q3z
+        #             q_best = q8[whichik_handle.value].copy()
+        #             ikstatus_best = copy.copy(ikstatus)
 
-        # print(q3z_best)
-        qlast_handle.value = q_best[-1]
-        solution = q_best
+        # # print(q3z_best)
+        # qlast_handle.value = q_best[-1]
+        # solution = q_best
         # print(solution[1])
-        # q8[:, -1] = qlast_handle.value
-        # ikstatus = arm.ik(tf_tool0, q8)
-        # solution = q8[whichik_handle.value]
+        q8[:, -1] = qlast_handle.value
+        ikstatus = arm.ik(tf_tool0, q8)
+        solution = q8[whichik_handle.value]
 
         # arm.fk_links(solution, qtLink)
         # print(qtLink[3, -1])
@@ -148,6 +148,7 @@ def main_arm7():
         timing_handle.value = f"{ikstatus_best:08b}"
         # print(solution)
         urdf_vis.update_cfg(solution)
+        time.sleep(0.05)
 
 
 if __name__ == "__main__":
