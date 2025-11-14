@@ -28,7 +28,7 @@ using VSphG8f = soa::SphereGroupf<A, 8>;
 
 struct DistanceField
 {
-  std::vector<float> data;
+  std::vector<float> _data;
   uint32_t shape[ 3 ];
   float origin[ 3 ];
   float side;
@@ -37,7 +37,7 @@ struct DistanceField
     shape[ 0 ] = nx;
     shape[ 1 ] = ny;
     shape[ 2 ] = nz;
-    data.resize( nx * ny * nz );
+    _data.resize( nx * ny * nz );
   };
   void set_origin( float ox, float oy, float oz )
   {
@@ -55,8 +55,9 @@ struct DistanceField
     shape[ 0 ]  = 0;
     shape[ 1 ]  = 0;
     shape[ 2 ]  = 0;
-    data.clear();
+    _data.clear();
   }
+  const float *data() const { return _data.data(); };
 };
 
 template <int A>

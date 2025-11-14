@@ -62,9 +62,13 @@ void collision_initialize_object( VSphG8f<A> &spheres, const float *xyzr, uint32
 #endif
 };
 
-bool collision_df_vsph( const DistanceField &vsph, const float *x, const float *y, const float *z, const float *r,
+bool collision_df_vsph( const DistanceField &df, const float *x, const float *y, const float *z, const float *r,
                         const uint32_t nb_sph, float d_safe )
+
 {
+  constexpr float xyz_min[ 6 ] = { -100, -100, -100, 100, 100, 100 };
+  collisionf_sph_df<float>( x, y, z, r, xyz_min, nb_sph, df.data(), &( df.shape[ 0 ] ), &( df.origin[ 0 ] ), df.side,
+                            d_safe );
   return false;
 };
 

@@ -196,10 +196,10 @@ bool collisionf_sph_df( const REAL *X, const REAL *Y, const REAL *Z, const REAL 
   float df_at_xyz[ AMPL_SIMDW_F ] AMPL_ALIGNED( 16 ) = { 0, 0, 0, 0 };
   int d_safe_LE_df                                   = 0;
   VecuSimd zero_minus, below_zero, above_max[ 3 ], minus_max;
-  const VecfSimd xo   = _mm_loadu_ps( origin[ 0 ] );
-  const VecfSimd yo   = _mm_loadu_ps( origin[ 1 ] );
-  const VecfSimd zo   = _mm_loadu_ps( origin[ 2 ] );
-  const VecfSimd d    = _mm_loadu_ps( d_safe );
+  const VecfSimd xo   = _mm_set1_ps( origin[ 0 ] );
+  const VecfSimd yo   = _mm_set1_ps( origin[ 1 ] );
+  const VecfSimd zo   = _mm_set1_ps( origin[ 2 ] );
+  const VecfSimd d    = _mm_set1_ps( d_safe );
   const VecfSimd s    = _mm_set1_ps( side );
   const VecfSimd xmin = _mm_set1_ps( XYZ_minmax[ 0 ] );
   const VecfSimd ymin = _mm_set1_ps( XYZ_minmax[ 1 ] );
