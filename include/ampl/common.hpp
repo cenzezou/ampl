@@ -33,4 +33,12 @@
   } while ( 0 )
 #endif
 
+#ifdef _WIN32
+#define AMPL_ALIGNED( n ) __declspec( align( n ) )
+#define AMPL_FORCEINLINE  __forceinline
+#else
+#define AMPL_ALIGNED( n ) __attribute__( ( aligned( n ) ) )
+#define AMPL_FORCEINLINE  inline __attribute__( ( always_inline ) )
+#endif
+
 #endif

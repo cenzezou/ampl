@@ -18,6 +18,9 @@ from ._core import version as version
 from ._core import ArmBase as ArmBase
 from ._core import ArmType as ArmType
 
+from ._core import VSphG8f as VSphG8f
+from ._core import collision_initialize_object as collision_initialize_object
+
 from ._core import get_stl_data as get_stl_data
 from ._utils.io import read_trimesh as read_trimesh
 from ._utils.io import write_trimesh as write_trimesh

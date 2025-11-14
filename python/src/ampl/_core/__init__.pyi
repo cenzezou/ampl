@@ -89,3 +89,21 @@ def trimesh_raycast(vertices: Annotated[NDArray[numpy.float64], dict(shape=(None
     """
     This function performs distance queries of a point cloud against a distance field
     """
+
+class VSphG8f:
+    def __init__(self) -> None: ...
+
+    @property
+    def nb_sph(self) -> int: ...
+
+    @nb_sph.setter
+    def nb_sph(self, arg: int, /) -> None: ...
+
+    @property
+    def nb_offset(self) -> int: ...
+
+    @nb_offset.setter
+    def nb_offset(self, arg: int, /) -> None: ...
+
+def collision_initialize_object(arg0: Annotated[NDArray[numpy.float32], dict(shape=(None, 4), device='cpu')], arg1: Annotated[NDArray[numpy.uint32], dict(shape=(None,), device='cpu')], arg2: VSphG8f, /) -> None:
+    """Print version of ampl in terminal."""
